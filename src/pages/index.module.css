@@ -1,0 +1,169 @@
+.main {
+  margin: 0;
+}
+
+.header {
+  padding: 0 20px;
+}
+
+.player {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  height: 270px;
+  padding: 0 50px;
+  margin: 0, 10em;
+  background-color: #b43227;
+  box-shadow: 0 0 22px -5px rgb(0 0 0 / 60%);
+}
+
+.youTubePlayer iframe {
+  display: block;
+}
+
+.player-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 480px;
+  padding-left: 30px;
+  background-color: #b43227;
+}
+
+.musicInfo {
+  color: white;
+}
+
+.musicTitle {
+  margin: 5px 0;
+  font-size: 24px;
+}
+
+.musicArtist {
+  font-size: 16px;
+  color: #ebebeb;
+}
+
+.share {
+  width: fit-content;
+  padding: 5px 10px;
+  margin: 0;
+  font-size: 12px;
+  color: fff;
+  background-color: #1DA1F2;
+  border-radius: 5px;
+  vertical-align: middle;
+}
+
+.share svg {
+  vertical-align: middle;
+}
+
+.share a:link {
+  color: #fff;
+  text-decoration: none;
+}
+
+.share a:visited {
+  color: #fff;
+  text-decoration: none;
+}
+
+.playerControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 400px;
+  padding: 10px 20px;
+  margin-top: 15px;
+  user-select: none;
+  background-color: #8f282d;
+  filter: drop-shadow(0 0 0.1rem #db3a35);
+  border-radius: 10px;
+}
+
+.controlIcon {
+  color: #faebe8;
+  filter: drop-shadow(0 0 5px #000);
+}
+
+.controlIcon:hover {
+  color: #fff;
+}
+
+.controlIconEnable {
+  color: #ffcce6;
+  filter: none;
+}
+
+.controlIconEnable:hover {
+  color: #fff;
+}
+
+.controlIcon:active {
+  color: #fff;
+  filter: none;
+}
+
+.songList {
+  max-width: 1200px;
+  margin: 20px auto 0;
+  cursor: pointer;
+}
+
+/* for mobile */
+@media screen and (max-width: 959px) {
+  .header {
+    padding: 0;
+  }
+
+  .player {
+    display: block;
+    width: 100%;
+    width: fit-content;
+    height: fit-content;
+    padding: 0;
+  }
+
+  .player-side {
+    display: block;
+    width: 100%;
+    padding: 0;
+  }
+
+  .musicInfo {
+    display: flex;
+    align-items: center;
+    padding: 0 1em;
+  }
+
+  .musicTitle {
+    align-self: center;
+    margin-right: 0.5em;
+  }
+
+  .musicArtist {
+    flex-shrink: 2;
+  }
+
+  .share {
+    margin-left: auto;
+  }
+
+  .shareText {
+    display: none;
+  }
+
+  .playerControls {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .songList {
+    width: 100%;
+    overflow-x: hidden;
+  }
+}

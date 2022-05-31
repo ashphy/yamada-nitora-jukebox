@@ -1,0 +1,48 @@
+{
+  "name": "yamada-nitora-jukebox",
+  "version": "1.0.0",
+  "private": true,
+  "description": "yamada-nitora-jukebox",
+  "author": "Kazuki Hamasaki",
+  "keywords": [
+    "gatsby"
+  ],
+  "scripts": {
+    "develop": "gatsby develop",
+    "start": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean",
+    "typecheck": "tsc --noEmit",
+    "deploy": "gatsby-plugin-s3 deploy"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@react-icons/all-files": "^4.1.0",
+    "framer-motion": "^6.3.6",
+    "gatsby": "^4.15.1",
+    "gatsby-plugin-graphql-codegen": "^3.1.1",
+    "gatsby-plugin-manifest": "^4.15.1",
+    "gatsby-plugin-react-helmet": "^5.15.0",
+    "gatsby-plugin-s3": "^0.3.8",
+    "gatsby-plugin-use-query-params": "^1.0.1",
+    "gatsby-source-filesystem": "^4.15.0",
+    "gatsby-transformer-yaml": "^4.15.0",
+    "lodash": "^4.17.21",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "react-helmet": "^6.1.0",
+    "react-youtube": "file:../react-youtube/packages/react-youtube",
+    "use-query-params": "^1.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.35",
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "^18.0.5",
+    "stylelint": "^14.8.5",
+    "stylelint-config-recess-order": "^3.0.0",
+    "stylelint-config-standard": "^25.0.0",
+    "typescript": "^4.7.2"
+  }
+}
