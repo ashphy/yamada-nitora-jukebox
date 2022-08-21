@@ -38,6 +38,10 @@ export const Layout = ({ children }: LayoutProps) => {
         <footer>
             このサイトは非公式ファンサイトです。
             <a target="_blank" href="https://twitter.com/ashphy">あしゅふぃ（@ashphy）</a>が制作しました。
+
+            <p>
+              イラスト制作: <a href="https://twitter.com/ikutoseyuki" target={"_blank"}>幾年ユキ様 (@ikutoseyuki)</a>
+            </p>
         </footer>
     </>;
 }
