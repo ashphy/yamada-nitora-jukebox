@@ -21,6 +21,8 @@ import useWindowDimensions from '../hooks/useWindowDimensions';
 import _ from 'lodash';
 import { NumberParam, useQueryParam } from 'use-query-params';
 
+import GitHubButton from 'react-github-btn'
+
 const playerDefaultOpts: YouTubeProps['opts'] = {
   width: 480,
   height: 270,
@@ -194,6 +196,16 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
           <h1>
             山田ニトラ ジュークボックス
           </h1>
+
+          <div className={style.githubStar}>
+            <GitHubButton
+              href="https://github.com/ashphy/yamada-nitora-jukebox"
+              data-icon="octicon-star"
+              aria-label="Star ashphy/yamada-nitora-jukebox on GitHub"
+            >
+                Star
+            </GitHubButton>
+          </div>
         </header>
 
         <div className={style.player}>

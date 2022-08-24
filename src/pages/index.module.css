@@ -112,6 +112,13 @@
   cursor: pointer;
 }
 
+.githubStar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: block;
+}
+
 /* for mobile */
 @media screen and (max-width: 959px) {
   .header {
@@ -165,5 +172,9 @@
   .songList {
     width: 100%;
     overflow-x: hidden;
+  }
+
+  .githubStar {
+    display: none;
   }
 }
