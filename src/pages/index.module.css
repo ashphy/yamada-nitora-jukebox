@@ -107,9 +107,33 @@
 }
 
 .songList {
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 20px auto 0;
   cursor: pointer;
+}
+
+.songList table {
+  table-layout: fixed;
+}
+
+.songCursor {
+  width: 20px;
+}
+
+.songTitle {
+  width: 30%;
+  overflow: hidden;
+}
+
+.songArtist {
+  width: 30%;
+  overflow: hidden;
+}
+
+.songSource {
+  width: 30%;
+  overflow: hidden;
+  font-size: 0.8rem;
 }
 
 .githubStar {
@@ -172,6 +196,24 @@
   .songList {
     width: 100%;
     overflow-x: hidden;
+  }
+
+  .songList table {
+    table-layout: auto;
+  }
+
+  .songColHidden {
+    visibility: collapse;
+  }
+
+  .songTitle {
+    width: 50%;
+    overflow: hidden;
+  }
+
+  .songArtist {
+    width: 50%;
+    overflow: hidden;
   }
 
   .githubStar {

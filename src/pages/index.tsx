@@ -14,6 +14,7 @@ import { RiRepeat2Line } from "@react-icons/all-files/ri/RiRepeat2Line";
 import { FiExternalLink } from "@react-icons/all-files/fi/FiExternalLink";
 import { FaRandom } from "@react-icons/all-files/fa/FaRandom";
 import { FaTwitter } from "@react-icons/all-files/fa/FaTwitter";
+import { BsPlayFill } from "@react-icons/all-files/bs/BsPlayFill";
 
 import * as style from '../pages/index.module.css';
 import { Layout } from '../components/layout';
@@ -291,25 +292,36 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
 
         <div className={style.songList}>
           <table>
+            <colgroup>
+              <col span={1} className={style.songColHidden} />
+              <col span={2} />
+              <col span={2} className={style.songColHidden} />
+            </colgroup>
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Artist</th>
-                <th>Source</th>
-                <th></th>
+                <th className={style.songCursor}></th>
+                <th className={style.songTitle}>Title</th>
+                <th className={style.songArtist}>Artist</th>
+                <th className={style.songSource}>Source</th>
+                <th className={style.songAction}></th>
               </tr>
             </thead>
             <tbody>
               {
                 songs.map((song, songId) => {
+                  const isCurrentPlaying = playlist[playlistIndex] == songId;
+
                   return <tr
                     key={songId}
-                    ref={playlist[playlistIndex] == songId ? currentSongRow : null}
-                    style={playlist[playlistIndex] == songId ? { backgroundColor: '#E8E8E8' } : {}}
+                    ref={isCurrentPlaying ? currentSongRow : null}
+                    style={isCurrentPlaying ? { backgroundColor: '#FFF1F3' } : {}}
                     >
-                    <td onClick={() => { playBySongId(songId) }} >{song.meta?.ja?.title ?? '--'}</td>
-                    <td onClick={() => { playBySongId(songId) }} >{song.meta?.ja?.artist ?? '--'}</td>
-                    <td onClick={() => { playBySongId(songId) }} >{song.videoTitle}</td>
+                    <td className={style.songCursor}>
+                      {isCurrentPlaying && <BsPlayFill />}
+                    </td>
+                    <td className={style.songTitle} onClick={() => { playBySongId(songId) }} >{song.meta?.ja?.title ?? '--'}</td>
+                    <td className={style.songArtist} onClick={() => { playBySongId(songId) }} >{song.meta?.ja?.artist ?? '--'}</td>
+                    <td className={style.songSource} onClick={() => { playBySongId(songId) }} >{song.videoTitle}</td>
                     <td>
                       <a target="_blank"
                          href={youtubeUrl(song)} >
