@@ -1,5 +1,6 @@
 .main {
   margin: 0;
+  background-color: white;
 }
 
 .header {
@@ -13,7 +14,7 @@
   justify-content: center;
   height: 270px;
   padding: 0 50px;
-  margin: 0, 10em;
+  margin: 0;
   background-color: #b43227;
   box-shadow: 0 0 22px -5px rgb(0 0 0 / 60%);
 }
@@ -43,31 +44,6 @@
 .musicArtist {
   font-size: 16px;
   color: #ebebeb;
-}
-
-.share {
-  width: fit-content;
-  padding: 5px 10px;
-  margin: 0;
-  font-size: 12px;
-  color: fff;
-  background-color: #1DA1F2;
-  border-radius: 5px;
-  vertical-align: middle;
-}
-
-.share svg {
-  vertical-align: middle;
-}
-
-.share a:link {
-  color: #fff;
-  text-decoration: none;
-}
-
-.share a:visited {
-  color: #fff;
-  text-decoration: none;
 }
 
 .playerControls {
@@ -108,6 +84,7 @@
 
 .songList {
   max-width: 1600px;
+  padding: 0 40px 0 20px;
   margin: 20px auto 0;
   cursor: pointer;
 }
@@ -116,8 +93,18 @@
   table-layout: fixed;
 }
 
+.sortIcon svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .songCursor {
   width: 20px;
+}
+
+.songCursor svg {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .songTitle {
@@ -131,9 +118,15 @@
 }
 
 .songSource {
-  width: 30%;
   overflow: hidden;
+}
+
+td.songSource {
   font-size: 0.8rem;
+}
+
+.songAction {
+  width: 30px;
 }
 
 .githubStar {
@@ -152,7 +145,6 @@
   .player {
     display: block;
     width: 100%;
-    width: fit-content;
     height: fit-content;
     padding: 0;
   }
@@ -172,18 +164,12 @@
   .musicTitle {
     align-self: center;
     margin-right: 0.5em;
+    font-size: 14px;
   }
 
   .musicArtist {
     flex-shrink: 2;
-  }
-
-  .share {
-    margin-left: auto;
-  }
-
-  .shareText {
-    display: none;
+    font-size: 12px;
   }
 
   .playerControls {
@@ -195,15 +181,16 @@
 
   .songList {
     width: 100%;
+    padding: 0;
     overflow-x: hidden;
   }
 
   .songList table {
-    table-layout: auto;
+    /* table-layout: auto; */
   }
 
-  .songColHidden {
-    visibility: collapse;
+  .songCursor {
+    display: none;
   }
 
   .songTitle {
@@ -214,6 +201,10 @@
   .songArtist {
     width: 50%;
     overflow: hidden;
+  }
+
+  .songAction {
+    display: none;
   }
 
   .githubStar {

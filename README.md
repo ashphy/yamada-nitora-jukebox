@@ -20,4 +20,4 @@ npm run develop
 
 ### 歌枠データの追加
 
-[musics.yaml](src/data/musics.yaml) に追記してPull Requestを送ってください。
+[musics.yaml](src/data/music.yaml) に追記してPull Requestを送ってください。

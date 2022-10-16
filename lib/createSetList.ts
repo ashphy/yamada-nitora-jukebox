@@ -17,7 +17,7 @@ type Musics = {
 const loadYaml = <T = ReturnType<typeof load>>(...args: Parameters<typeof load>): T => load(...args);
 
 const loadMusics = () => {
-    return loadYaml<Musics[]>(readFileSync('./src/data/musics.yaml', 'utf8'));
+    return loadYaml<Musics[]>(readFileSync('./src/data/music.yaml', 'utf8'));
 }
 
 const createSetList = () => {

@@ -59,10 +59,14 @@ export type File = Node & {
   blocks?: Maybe<Scalars['Int']>;
   /** Copy file to static directory and return public url to it */
   publicURL?: Maybe<Scalars['String']>;
-  /** Returns all children nodes filtered by type MusicsYaml */
-  childrenMusicsYaml?: Maybe<Array<Maybe<MusicsYaml>>>;
-  /** Returns the first child node of type MusicsYaml or null if there are no children of given type on this node */
-  childMusicsYaml?: Maybe<MusicsYaml>;
+  /** Returns all children nodes filtered by type Music */
+  childrenMusic?: Maybe<Array<Maybe<Music>>>;
+  /** Returns the first child node of type Music or null if there are no children of given type on this node */
+  childMusic?: Maybe<Music>;
+  /** Returns all children nodes filtered by type Video */
+  childrenVideo?: Maybe<Array<Maybe<Video>>>;
+  /** Returns the first child node of type Video or null if there are no children of given type on this node */
+  childVideo?: Maybe<Video>;
   id: Scalars['ID'];
   parent?: Maybe<Node>;
   children: Array<Node>;
@@ -142,6 +146,7 @@ export type Internal = {
   mediaType?: Maybe<Scalars['String']>;
   owner: Scalars['String'];
   type: Scalars['String'];
+  contentFilePath?: Maybe<Scalars['String']>;
 };
 
 export type Directory = Node & {
@@ -245,7 +250,7 @@ export type Site = Node & {
   siteMetadata?: Maybe<SiteSiteMetadata>;
   port?: Maybe<Scalars['Int']>;
   host?: Maybe<Scalars['String']>;
-  graphqlTypegen?: Maybe<Scalars['Boolean']>;
+  graphqlTypegen?: Maybe<SiteGraphqlTypegen>;
   polyfill?: Maybe<Scalars['Boolean']>;
   pathPrefix?: Maybe<Scalars['String']>;
   jsxRuntime?: Maybe<Scalars['String']>;
@@ -262,6 +267,11 @@ export type SiteBuildTimeArgs = {
   fromNow?: InputMaybe<Scalars['Boolean']>;
   difference?: InputMaybe<Scalars['String']>;
   locale?: InputMaybe<Scalars['String']>;
+};
+
+export type SiteGraphqlTypegen = {
+  typesOutputPath?: Maybe<Scalars['String']>;
+  generateOnBuild?: Maybe<Scalars['Boolean']>;
 };
 
 export type SiteSiteMetadata = {
@@ -331,25 +341,35 @@ export type SiteBuildMetadataBuildTimeArgs = {
   locale?: InputMaybe<Scalars['String']>;
 };
 
-export type MusicsYaml = Node & {
+export type Music = Node & {
+  video?: Maybe<Video>;
+  start?: Maybe<Scalars['String']>;
+  end?: Maybe<Scalars['String']>;
+  meta?: Maybe<MusicMeta>;
   id: Scalars['ID'];
   parent?: Maybe<Node>;
   children: Array<Node>;
   internal: Internal;
-  videoId?: Maybe<Scalars['String']>;
-  videoTitle?: Maybe<Scalars['String']>;
-  start?: Maybe<Scalars['String']>;
-  end?: Maybe<Scalars['String']>;
-  meta?: Maybe<MusicsYamlMeta>;
 };
 
-export type MusicsYamlMeta = {
-  ja?: Maybe<MusicsYamlMetaJa>;
+export type MusicMeta = {
+  ja?: Maybe<MusicMetaJa>;
 };
 
-export type MusicsYamlMetaJa = {
+export type MusicMetaJa = {
   title?: Maybe<Scalars['String']>;
   artist?: Maybe<Scalars['String']>;
+};
+
+export type Video = Node & {
+  musics?: Maybe<Array<Maybe<Music>>>;
+  date?: Maybe<Scalars['Date']>;
+  videoId?: Maybe<Scalars['String']>;
+  videoTitle?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  parent?: Maybe<Node>;
+  children: Array<Node>;
+  internal: Internal;
 };
 
 export type Query = {
@@ -367,8 +387,10 @@ export type Query = {
   allSitePlugin: SitePluginConnection;
   siteBuildMetadata?: Maybe<SiteBuildMetadata>;
   allSiteBuildMetadata: SiteBuildMetadataConnection;
-  musicsYaml?: Maybe<MusicsYaml>;
-  allMusicsYaml: MusicsYamlConnection;
+  music?: Maybe<Music>;
+  allMusic: MusicConnection;
+  video?: Maybe<Video>;
+  allVideo: VideoConnection;
 };
 
 
@@ -407,8 +429,10 @@ export type QueryFileArgs = {
   blksize?: InputMaybe<IntQueryOperatorInput>;
   blocks?: InputMaybe<IntQueryOperatorInput>;
   publicURL?: InputMaybe<StringQueryOperatorInput>;
-  childrenMusicsYaml?: InputMaybe<MusicsYamlFilterListInput>;
-  childMusicsYaml?: InputMaybe<MusicsYamlFilterInput>;
+  childrenMusic?: InputMaybe<MusicFilterListInput>;
+  childMusic?: InputMaybe<MusicFilterInput>;
+  childrenVideo?: InputMaybe<VideoFilterListInput>;
+  childVideo?: InputMaybe<VideoFilterInput>;
   id?: InputMaybe<StringQueryOperatorInput>;
   parent?: InputMaybe<NodeFilterInput>;
   children?: InputMaybe<NodeFilterListInput>;
@@ -476,7 +500,7 @@ export type QuerySiteArgs = {
   siteMetadata?: InputMaybe<SiteSiteMetadataFilterInput>;
   port?: InputMaybe<IntQueryOperatorInput>;
   host?: InputMaybe<StringQueryOperatorInput>;
-  graphqlTypegen?: InputMaybe<BooleanQueryOperatorInput>;
+  graphqlTypegen?: InputMaybe<SiteGraphqlTypegenFilterInput>;
   polyfill?: InputMaybe<BooleanQueryOperatorInput>;
   pathPrefix?: InputMaybe<StringQueryOperatorInput>;
   jsxRuntime?: InputMaybe<StringQueryOperatorInput>;
@@ -584,22 +608,41 @@ export type QueryAllSiteBuildMetadataArgs = {
 };
 
 
-export type QueryMusicsYamlArgs = {
+export type QueryMusicArgs = {
+  video?: InputMaybe<VideoFilterInput>;
+  start?: InputMaybe<StringQueryOperatorInput>;
+  end?: InputMaybe<StringQueryOperatorInput>;
+  meta?: InputMaybe<MusicMetaFilterInput>;
   id?: InputMaybe<StringQueryOperatorInput>;
   parent?: InputMaybe<NodeFilterInput>;
   children?: InputMaybe<NodeFilterListInput>;
   internal?: InputMaybe<InternalFilterInput>;
-  videoId?: InputMaybe<StringQueryOperatorInput>;
-  videoTitle?: InputMaybe<StringQueryOperatorInput>;
-  start?: InputMaybe<StringQueryOperatorInput>;
-  end?: InputMaybe<StringQueryOperatorInput>;
-  meta?: InputMaybe<MusicsYamlMetaFilterInput>;
 };
 
 
-export type QueryAllMusicsYamlArgs = {
-  filter?: InputMaybe<MusicsYamlFilterInput>;
-  sort?: InputMaybe<MusicsYamlSortInput>;
+export type QueryAllMusicArgs = {
+  filter?: InputMaybe<MusicFilterInput>;
+  sort?: InputMaybe<MusicSortInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryVideoArgs = {
+  musics?: InputMaybe<MusicFilterListInput>;
+  date?: InputMaybe<DateQueryOperatorInput>;
+  videoId?: InputMaybe<StringQueryOperatorInput>;
+  videoTitle?: InputMaybe<StringQueryOperatorInput>;
+  id?: InputMaybe<StringQueryOperatorInput>;
+  parent?: InputMaybe<NodeFilterInput>;
+  children?: InputMaybe<NodeFilterListInput>;
+  internal?: InputMaybe<InternalFilterInput>;
+};
+
+
+export type QueryAllVideoArgs = {
+  filter?: InputMaybe<VideoFilterInput>;
+  sort?: InputMaybe<VideoSortInput>;
   skip?: InputMaybe<Scalars['Int']>;
   limit?: InputMaybe<Scalars['Int']>;
 };
@@ -646,20 +689,30 @@ export type FloatQueryOperatorInput = {
   nin?: InputMaybe<Array<InputMaybe<Scalars['Float']>>>;
 };
 
-export type MusicsYamlFilterListInput = {
-  elemMatch?: InputMaybe<MusicsYamlFilterInput>;
+export type MusicFilterListInput = {
+  elemMatch?: InputMaybe<MusicFilterInput>;
 };
 
-export type MusicsYamlFilterInput = {
+export type MusicFilterInput = {
+  video?: InputMaybe<VideoFilterInput>;
+  start?: InputMaybe<StringQueryOperatorInput>;
+  end?: InputMaybe<StringQueryOperatorInput>;
+  meta?: InputMaybe<MusicMetaFilterInput>;
   id?: InputMaybe<StringQueryOperatorInput>;
   parent?: InputMaybe<NodeFilterInput>;
   children?: InputMaybe<NodeFilterListInput>;
   internal?: InputMaybe<InternalFilterInput>;
+};
+
+export type VideoFilterInput = {
+  musics?: InputMaybe<MusicFilterListInput>;
+  date?: InputMaybe<DateQueryOperatorInput>;
   videoId?: InputMaybe<StringQueryOperatorInput>;
   videoTitle?: InputMaybe<StringQueryOperatorInput>;
-  start?: InputMaybe<StringQueryOperatorInput>;
-  end?: InputMaybe<StringQueryOperatorInput>;
-  meta?: InputMaybe<MusicsYamlMetaFilterInput>;
+  id?: InputMaybe<StringQueryOperatorInput>;
+  parent?: InputMaybe<NodeFilterInput>;
+  children?: InputMaybe<NodeFilterListInput>;
+  internal?: InputMaybe<InternalFilterInput>;
 };
 
 export type NodeFilterInput = {
@@ -682,6 +735,7 @@ export type InternalFilterInput = {
   mediaType?: InputMaybe<StringQueryOperatorInput>;
   owner?: InputMaybe<StringQueryOperatorInput>;
   type?: InputMaybe<StringQueryOperatorInput>;
+  contentFilePath?: InputMaybe<StringQueryOperatorInput>;
 };
 
 export type BooleanQueryOperatorInput = {
@@ -691,13 +745,17 @@ export type BooleanQueryOperatorInput = {
   nin?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
 };
 
-export type MusicsYamlMetaFilterInput = {
-  ja?: InputMaybe<MusicsYamlMetaJaFilterInput>;
+export type MusicMetaFilterInput = {
+  ja?: InputMaybe<MusicMetaJaFilterInput>;
 };
 
-export type MusicsYamlMetaJaFilterInput = {
+export type MusicMetaJaFilterInput = {
   title?: InputMaybe<StringQueryOperatorInput>;
   artist?: InputMaybe<StringQueryOperatorInput>;
+};
+
+export type VideoFilterListInput = {
+  elemMatch?: InputMaybe<VideoFilterInput>;
 };
 
 export type FileConnection = {
@@ -790,95 +848,280 @@ export type FileFieldsEnum =
   | 'blksize'
   | 'blocks'
   | 'publicURL'
-  | 'childrenMusicsYaml'
-  | 'childrenMusicsYaml___id'
-  | 'childrenMusicsYaml___parent___id'
-  | 'childrenMusicsYaml___parent___parent___id'
-  | 'childrenMusicsYaml___parent___parent___children'
-  | 'childrenMusicsYaml___parent___children'
-  | 'childrenMusicsYaml___parent___children___id'
-  | 'childrenMusicsYaml___parent___children___children'
-  | 'childrenMusicsYaml___parent___internal___content'
-  | 'childrenMusicsYaml___parent___internal___contentDigest'
-  | 'childrenMusicsYaml___parent___internal___description'
-  | 'childrenMusicsYaml___parent___internal___fieldOwners'
-  | 'childrenMusicsYaml___parent___internal___ignoreType'
-  | 'childrenMusicsYaml___parent___internal___mediaType'
-  | 'childrenMusicsYaml___parent___internal___owner'
-  | 'childrenMusicsYaml___parent___internal___type'
-  | 'childrenMusicsYaml___children'
-  | 'childrenMusicsYaml___children___id'
-  | 'childrenMusicsYaml___children___parent___id'
-  | 'childrenMusicsYaml___children___parent___children'
-  | 'childrenMusicsYaml___children___children'
-  | 'childrenMusicsYaml___children___children___id'
-  | 'childrenMusicsYaml___children___children___children'
-  | 'childrenMusicsYaml___children___internal___content'
-  | 'childrenMusicsYaml___children___internal___contentDigest'
-  | 'childrenMusicsYaml___children___internal___description'
-  | 'childrenMusicsYaml___children___internal___fieldOwners'
-  | 'childrenMusicsYaml___children___internal___ignoreType'
-  | 'childrenMusicsYaml___children___internal___mediaType'
-  | 'childrenMusicsYaml___children___internal___owner'
-  | 'childrenMusicsYaml___children___internal___type'
-  | 'childrenMusicsYaml___internal___content'
-  | 'childrenMusicsYaml___internal___contentDigest'
-  | 'childrenMusicsYaml___internal___description'
-  | 'childrenMusicsYaml___internal___fieldOwners'
-  | 'childrenMusicsYaml___internal___ignoreType'
-  | 'childrenMusicsYaml___internal___mediaType'
-  | 'childrenMusicsYaml___internal___owner'
-  | 'childrenMusicsYaml___internal___type'
-  | 'childrenMusicsYaml___videoId'
-  | 'childrenMusicsYaml___videoTitle'
-  | 'childrenMusicsYaml___start'
-  | 'childrenMusicsYaml___end'
-  | 'childrenMusicsYaml___meta___ja___title'
-  | 'childrenMusicsYaml___meta___ja___artist'
-  | 'childMusicsYaml___id'
-  | 'childMusicsYaml___parent___id'
-  | 'childMusicsYaml___parent___parent___id'
-  | 'childMusicsYaml___parent___parent___children'
-  | 'childMusicsYaml___parent___children'
-  | 'childMusicsYaml___parent___children___id'
-  | 'childMusicsYaml___parent___children___children'
-  | 'childMusicsYaml___parent___internal___content'
-  | 'childMusicsYaml___parent___internal___contentDigest'
-  | 'childMusicsYaml___parent___internal___description'
-  | 'childMusicsYaml___parent___internal___fieldOwners'
-  | 'childMusicsYaml___parent___internal___ignoreType'
-  | 'childMusicsYaml___parent___internal___mediaType'
-  | 'childMusicsYaml___parent___internal___owner'
-  | 'childMusicsYaml___parent___internal___type'
-  | 'childMusicsYaml___children'
-  | 'childMusicsYaml___children___id'
-  | 'childMusicsYaml___children___parent___id'
-  | 'childMusicsYaml___children___parent___children'
-  | 'childMusicsYaml___children___children'
-  | 'childMusicsYaml___children___children___id'
-  | 'childMusicsYaml___children___children___children'
-  | 'childMusicsYaml___children___internal___content'
-  | 'childMusicsYaml___children___internal___contentDigest'
-  | 'childMusicsYaml___children___internal___description'
-  | 'childMusicsYaml___children___internal___fieldOwners'
-  | 'childMusicsYaml___children___internal___ignoreType'
-  | 'childMusicsYaml___children___internal___mediaType'
-  | 'childMusicsYaml___children___internal___owner'
-  | 'childMusicsYaml___children___internal___type'
-  | 'childMusicsYaml___internal___content'
-  | 'childMusicsYaml___internal___contentDigest'
-  | 'childMusicsYaml___internal___description'
-  | 'childMusicsYaml___internal___fieldOwners'
-  | 'childMusicsYaml___internal___ignoreType'
-  | 'childMusicsYaml___internal___mediaType'
-  | 'childMusicsYaml___internal___owner'
-  | 'childMusicsYaml___internal___type'
-  | 'childMusicsYaml___videoId'
-  | 'childMusicsYaml___videoTitle'
-  | 'childMusicsYaml___start'
-  | 'childMusicsYaml___end'
-  | 'childMusicsYaml___meta___ja___title'
-  | 'childMusicsYaml___meta___ja___artist'
+  | 'childrenMusic'
+  | 'childrenMusic___video___musics'
+  | 'childrenMusic___video___musics___start'
+  | 'childrenMusic___video___musics___end'
+  | 'childrenMusic___video___musics___id'
+  | 'childrenMusic___video___musics___children'
+  | 'childrenMusic___video___date'
+  | 'childrenMusic___video___videoId'
+  | 'childrenMusic___video___videoTitle'
+  | 'childrenMusic___video___id'
+  | 'childrenMusic___video___parent___id'
+  | 'childrenMusic___video___parent___children'
+  | 'childrenMusic___video___children'
+  | 'childrenMusic___video___children___id'
+  | 'childrenMusic___video___children___children'
+  | 'childrenMusic___video___internal___content'
+  | 'childrenMusic___video___internal___contentDigest'
+  | 'childrenMusic___video___internal___description'
+  | 'childrenMusic___video___internal___fieldOwners'
+  | 'childrenMusic___video___internal___ignoreType'
+  | 'childrenMusic___video___internal___mediaType'
+  | 'childrenMusic___video___internal___owner'
+  | 'childrenMusic___video___internal___type'
+  | 'childrenMusic___video___internal___contentFilePath'
+  | 'childrenMusic___start'
+  | 'childrenMusic___end'
+  | 'childrenMusic___meta___ja___title'
+  | 'childrenMusic___meta___ja___artist'
+  | 'childrenMusic___id'
+  | 'childrenMusic___parent___id'
+  | 'childrenMusic___parent___parent___id'
+  | 'childrenMusic___parent___parent___children'
+  | 'childrenMusic___parent___children'
+  | 'childrenMusic___parent___children___id'
+  | 'childrenMusic___parent___children___children'
+  | 'childrenMusic___parent___internal___content'
+  | 'childrenMusic___parent___internal___contentDigest'
+  | 'childrenMusic___parent___internal___description'
+  | 'childrenMusic___parent___internal___fieldOwners'
+  | 'childrenMusic___parent___internal___ignoreType'
+  | 'childrenMusic___parent___internal___mediaType'
+  | 'childrenMusic___parent___internal___owner'
+  | 'childrenMusic___parent___internal___type'
+  | 'childrenMusic___parent___internal___contentFilePath'
+  | 'childrenMusic___children'
+  | 'childrenMusic___children___id'
+  | 'childrenMusic___children___parent___id'
+  | 'childrenMusic___children___parent___children'
+  | 'childrenMusic___children___children'
+  | 'childrenMusic___children___children___id'
+  | 'childrenMusic___children___children___children'
+  | 'childrenMusic___children___internal___content'
+  | 'childrenMusic___children___internal___contentDigest'
+  | 'childrenMusic___children___internal___description'
+  | 'childrenMusic___children___internal___fieldOwners'
+  | 'childrenMusic___children___internal___ignoreType'
+  | 'childrenMusic___children___internal___mediaType'
+  | 'childrenMusic___children___internal___owner'
+  | 'childrenMusic___children___internal___type'
+  | 'childrenMusic___children___internal___contentFilePath'
+  | 'childrenMusic___internal___content'
+  | 'childrenMusic___internal___contentDigest'
+  | 'childrenMusic___internal___description'
+  | 'childrenMusic___internal___fieldOwners'
+  | 'childrenMusic___internal___ignoreType'
+  | 'childrenMusic___internal___mediaType'
+  | 'childrenMusic___internal___owner'
+  | 'childrenMusic___internal___type'
+  | 'childrenMusic___internal___contentFilePath'
+  | 'childMusic___video___musics'
+  | 'childMusic___video___musics___start'
+  | 'childMusic___video___musics___end'
+  | 'childMusic___video___musics___id'
+  | 'childMusic___video___musics___children'
+  | 'childMusic___video___date'
+  | 'childMusic___video___videoId'
+  | 'childMusic___video___videoTitle'
+  | 'childMusic___video___id'
+  | 'childMusic___video___parent___id'
+  | 'childMusic___video___parent___children'
+  | 'childMusic___video___children'
+  | 'childMusic___video___children___id'
+  | 'childMusic___video___children___children'
+  | 'childMusic___video___internal___content'
+  | 'childMusic___video___internal___contentDigest'
+  | 'childMusic___video___internal___description'
+  | 'childMusic___video___internal___fieldOwners'
+  | 'childMusic___video___internal___ignoreType'
+  | 'childMusic___video___internal___mediaType'
+  | 'childMusic___video___internal___owner'
+  | 'childMusic___video___internal___type'
+  | 'childMusic___video___internal___contentFilePath'
+  | 'childMusic___start'
+  | 'childMusic___end'
+  | 'childMusic___meta___ja___title'
+  | 'childMusic___meta___ja___artist'
+  | 'childMusic___id'
+  | 'childMusic___parent___id'
+  | 'childMusic___parent___parent___id'
+  | 'childMusic___parent___parent___children'
+  | 'childMusic___parent___children'
+  | 'childMusic___parent___children___id'
+  | 'childMusic___parent___children___children'
+  | 'childMusic___parent___internal___content'
+  | 'childMusic___parent___internal___contentDigest'
+  | 'childMusic___parent___internal___description'
+  | 'childMusic___parent___internal___fieldOwners'
+  | 'childMusic___parent___internal___ignoreType'
+  | 'childMusic___parent___internal___mediaType'
+  | 'childMusic___parent___internal___owner'
+  | 'childMusic___parent___internal___type'
+  | 'childMusic___parent___internal___contentFilePath'
+  | 'childMusic___children'
+  | 'childMusic___children___id'
+  | 'childMusic___children___parent___id'
+  | 'childMusic___children___parent___children'
+  | 'childMusic___children___children'
+  | 'childMusic___children___children___id'
+  | 'childMusic___children___children___children'
+  | 'childMusic___children___internal___content'
+  | 'childMusic___children___internal___contentDigest'
+  | 'childMusic___children___internal___description'
+  | 'childMusic___children___internal___fieldOwners'
+  | 'childMusic___children___internal___ignoreType'
+  | 'childMusic___children___internal___mediaType'
+  | 'childMusic___children___internal___owner'
+  | 'childMusic___children___internal___type'
+  | 'childMusic___children___internal___contentFilePath'
+  | 'childMusic___internal___content'
+  | 'childMusic___internal___contentDigest'
+  | 'childMusic___internal___description'
+  | 'childMusic___internal___fieldOwners'
+  | 'childMusic___internal___ignoreType'
+  | 'childMusic___internal___mediaType'
+  | 'childMusic___internal___owner'
+  | 'childMusic___internal___type'
+  | 'childMusic___internal___contentFilePath'
+  | 'childrenVideo'
+  | 'childrenVideo___musics'
+  | 'childrenVideo___musics___video___musics'
+  | 'childrenVideo___musics___video___date'
+  | 'childrenVideo___musics___video___videoId'
+  | 'childrenVideo___musics___video___videoTitle'
+  | 'childrenVideo___musics___video___id'
+  | 'childrenVideo___musics___video___children'
+  | 'childrenVideo___musics___start'
+  | 'childrenVideo___musics___end'
+  | 'childrenVideo___musics___id'
+  | 'childrenVideo___musics___parent___id'
+  | 'childrenVideo___musics___parent___children'
+  | 'childrenVideo___musics___children'
+  | 'childrenVideo___musics___children___id'
+  | 'childrenVideo___musics___children___children'
+  | 'childrenVideo___musics___internal___content'
+  | 'childrenVideo___musics___internal___contentDigest'
+  | 'childrenVideo___musics___internal___description'
+  | 'childrenVideo___musics___internal___fieldOwners'
+  | 'childrenVideo___musics___internal___ignoreType'
+  | 'childrenVideo___musics___internal___mediaType'
+  | 'childrenVideo___musics___internal___owner'
+  | 'childrenVideo___musics___internal___type'
+  | 'childrenVideo___musics___internal___contentFilePath'
+  | 'childrenVideo___date'
+  | 'childrenVideo___videoId'
+  | 'childrenVideo___videoTitle'
+  | 'childrenVideo___id'
+  | 'childrenVideo___parent___id'
+  | 'childrenVideo___parent___parent___id'
+  | 'childrenVideo___parent___parent___children'
+  | 'childrenVideo___parent___children'
+  | 'childrenVideo___parent___children___id'
+  | 'childrenVideo___parent___children___children'
+  | 'childrenVideo___parent___internal___content'
+  | 'childrenVideo___parent___internal___contentDigest'
+  | 'childrenVideo___parent___internal___description'
+  | 'childrenVideo___parent___internal___fieldOwners'
+  | 'childrenVideo___parent___internal___ignoreType'
+  | 'childrenVideo___parent___internal___mediaType'
+  | 'childrenVideo___parent___internal___owner'
+  | 'childrenVideo___parent___internal___type'
+  | 'childrenVideo___parent___internal___contentFilePath'
+  | 'childrenVideo___children'
+  | 'childrenVideo___children___id'
+  | 'childrenVideo___children___parent___id'
+  | 'childrenVideo___children___parent___children'
+  | 'childrenVideo___children___children'
+  | 'childrenVideo___children___children___id'
+  | 'childrenVideo___children___children___children'
+  | 'childrenVideo___children___internal___content'
+  | 'childrenVideo___children___internal___contentDigest'
+  | 'childrenVideo___children___internal___description'
+  | 'childrenVideo___children___internal___fieldOwners'
+  | 'childrenVideo___children___internal___ignoreType'
+  | 'childrenVideo___children___internal___mediaType'
+  | 'childrenVideo___children___internal___owner'
+  | 'childrenVideo___children___internal___type'
+  | 'childrenVideo___children___internal___contentFilePath'
+  | 'childrenVideo___internal___content'
+  | 'childrenVideo___internal___contentDigest'
+  | 'childrenVideo___internal___description'
+  | 'childrenVideo___internal___fieldOwners'
+  | 'childrenVideo___internal___ignoreType'
+  | 'childrenVideo___internal___mediaType'
+  | 'childrenVideo___internal___owner'
+  | 'childrenVideo___internal___type'
+  | 'childrenVideo___internal___contentFilePath'
+  | 'childVideo___musics'
+  | 'childVideo___musics___video___musics'
+  | 'childVideo___musics___video___date'
+  | 'childVideo___musics___video___videoId'
+  | 'childVideo___musics___video___videoTitle'
+  | 'childVideo___musics___video___id'
+  | 'childVideo___musics___video___children'
+  | 'childVideo___musics___start'
+  | 'childVideo___musics___end'
+  | 'childVideo___musics___id'
+  | 'childVideo___musics___parent___id'
+  | 'childVideo___musics___parent___children'
+  | 'childVideo___musics___children'
+  | 'childVideo___musics___children___id'
+  | 'childVideo___musics___children___children'
+  | 'childVideo___musics___internal___content'
+  | 'childVideo___musics___internal___contentDigest'
+  | 'childVideo___musics___internal___description'
+  | 'childVideo___musics___internal___fieldOwners'
+  | 'childVideo___musics___internal___ignoreType'
+  | 'childVideo___musics___internal___mediaType'
+  | 'childVideo___musics___internal___owner'
+  | 'childVideo___musics___internal___type'
+  | 'childVideo___musics___internal___contentFilePath'
+  | 'childVideo___date'
+  | 'childVideo___videoId'
+  | 'childVideo___videoTitle'
+  | 'childVideo___id'
+  | 'childVideo___parent___id'
+  | 'childVideo___parent___parent___id'
+  | 'childVideo___parent___parent___children'
+  | 'childVideo___parent___children'
+  | 'childVideo___parent___children___id'
+  | 'childVideo___parent___children___children'
+  | 'childVideo___parent___internal___content'
+  | 'childVideo___parent___internal___contentDigest'
+  | 'childVideo___parent___internal___description'
+  | 'childVideo___parent___internal___fieldOwners'
+  | 'childVideo___parent___internal___ignoreType'
+  | 'childVideo___parent___internal___mediaType'
+  | 'childVideo___parent___internal___owner'
+  | 'childVideo___parent___internal___type'
+  | 'childVideo___parent___internal___contentFilePath'
+  | 'childVideo___children'
+  | 'childVideo___children___id'
+  | 'childVideo___children___parent___id'
+  | 'childVideo___children___parent___children'
+  | 'childVideo___children___children'
+  | 'childVideo___children___children___id'
+  | 'childVideo___children___children___children'
+  | 'childVideo___children___internal___content'
+  | 'childVideo___children___internal___contentDigest'
+  | 'childVideo___children___internal___description'
+  | 'childVideo___children___internal___fieldOwners'
+  | 'childVideo___children___internal___ignoreType'
+  | 'childVideo___children___internal___mediaType'
+  | 'childVideo___children___internal___owner'
+  | 'childVideo___children___internal___type'
+  | 'childVideo___children___internal___contentFilePath'
+  | 'childVideo___internal___content'
+  | 'childVideo___internal___contentDigest'
+  | 'childVideo___internal___description'
+  | 'childVideo___internal___fieldOwners'
+  | 'childVideo___internal___ignoreType'
+  | 'childVideo___internal___mediaType'
+  | 'childVideo___internal___owner'
+  | 'childVideo___internal___type'
+  | 'childVideo___internal___contentFilePath'
   | 'id'
   | 'parent___id'
   | 'parent___parent___id'
@@ -895,6 +1138,7 @@ export type FileFieldsEnum =
   | 'parent___parent___internal___mediaType'
   | 'parent___parent___internal___owner'
   | 'parent___parent___internal___type'
+  | 'parent___parent___internal___contentFilePath'
   | 'parent___children'
   | 'parent___children___id'
   | 'parent___children___parent___id'
@@ -910,6 +1154,7 @@ export type FileFieldsEnum =
   | 'parent___children___internal___mediaType'
   | 'parent___children___internal___owner'
   | 'parent___children___internal___type'
+  | 'parent___children___internal___contentFilePath'
   | 'parent___internal___content'
   | 'parent___internal___contentDigest'
   | 'parent___internal___description'
@@ -918,6 +1163,7 @@ export type FileFieldsEnum =
   | 'parent___internal___mediaType'
   | 'parent___internal___owner'
   | 'parent___internal___type'
+  | 'parent___internal___contentFilePath'
   | 'children'
   | 'children___id'
   | 'children___parent___id'
@@ -934,6 +1180,7 @@ export type FileFieldsEnum =
   | 'children___parent___internal___mediaType'
   | 'children___parent___internal___owner'
   | 'children___parent___internal___type'
+  | 'children___parent___internal___contentFilePath'
   | 'children___children'
   | 'children___children___id'
   | 'children___children___parent___id'
@@ -949,6 +1196,7 @@ export type FileFieldsEnum =
   | 'children___children___internal___mediaType'
   | 'children___children___internal___owner'
   | 'children___children___internal___type'
+  | 'children___children___internal___contentFilePath'
   | 'children___internal___content'
   | 'children___internal___contentDigest'
   | 'children___internal___description'
@@ -957,6 +1205,7 @@ export type FileFieldsEnum =
   | 'children___internal___mediaType'
   | 'children___internal___owner'
   | 'children___internal___type'
+  | 'children___internal___contentFilePath'
   | 'internal___content'
   | 'internal___contentDigest'
   | 'internal___description'
@@ -964,7 +1213,8 @@ export type FileFieldsEnum =
   | 'internal___ignoreType'
   | 'internal___mediaType'
   | 'internal___owner'
-  | 'internal___type';
+  | 'internal___type'
+  | 'internal___contentFilePath';
 
 export type FileGroupConnection = {
   totalCount: Scalars['Int'];
@@ -1042,8 +1292,10 @@ export type FileFilterInput = {
   blksize?: InputMaybe<IntQueryOperatorInput>;
   blocks?: InputMaybe<IntQueryOperatorInput>;
   publicURL?: InputMaybe<StringQueryOperatorInput>;
-  childrenMusicsYaml?: InputMaybe<MusicsYamlFilterListInput>;
-  childMusicsYaml?: InputMaybe<MusicsYamlFilterInput>;
+  childrenMusic?: InputMaybe<MusicFilterListInput>;
+  childMusic?: InputMaybe<MusicFilterInput>;
+  childrenVideo?: InputMaybe<VideoFilterListInput>;
+  childVideo?: InputMaybe<VideoFilterInput>;
   id?: InputMaybe<StringQueryOperatorInput>;
   parent?: InputMaybe<NodeFilterInput>;
   children?: InputMaybe<NodeFilterListInput>;
@@ -1152,6 +1404,7 @@ export type DirectoryFieldsEnum =
   | 'parent___parent___internal___mediaType'
   | 'parent___parent___internal___owner'
   | 'parent___parent___internal___type'
+  | 'parent___parent___internal___contentFilePath'
   | 'parent___children'
   | 'parent___children___id'
   | 'parent___children___parent___id'
@@ -1167,6 +1420,7 @@ export type DirectoryFieldsEnum =
   | 'parent___children___internal___mediaType'
   | 'parent___children___internal___owner'
   | 'parent___children___internal___type'
+  | 'parent___children___internal___contentFilePath'
   | 'parent___internal___content'
   | 'parent___internal___contentDigest'
   | 'parent___internal___description'
@@ -1175,6 +1429,7 @@ export type DirectoryFieldsEnum =
   | 'parent___internal___mediaType'
   | 'parent___internal___owner'
   | 'parent___internal___type'
+  | 'parent___internal___contentFilePath'
   | 'children'
   | 'children___id'
   | 'children___parent___id'
@@ -1191,6 +1446,7 @@ export type DirectoryFieldsEnum =
   | 'children___parent___internal___mediaType'
   | 'children___parent___internal___owner'
   | 'children___parent___internal___type'
+  | 'children___parent___internal___contentFilePath'
   | 'children___children'
   | 'children___children___id'
   | 'children___children___parent___id'
@@ -1206,6 +1462,7 @@ export type DirectoryFieldsEnum =
   | 'children___children___internal___mediaType'
   | 'children___children___internal___owner'
   | 'children___children___internal___type'
+  | 'children___children___internal___contentFilePath'
   | 'children___internal___content'
   | 'children___internal___contentDigest'
   | 'children___internal___description'
@@ -1214,6 +1471,7 @@ export type DirectoryFieldsEnum =
   | 'children___internal___mediaType'
   | 'children___internal___owner'
   | 'children___internal___type'
+  | 'children___internal___contentFilePath'
   | 'internal___content'
   | 'internal___contentDigest'
   | 'internal___description'
@@ -1221,7 +1479,8 @@ export type DirectoryFieldsEnum =
   | 'internal___ignoreType'
   | 'internal___mediaType'
   | 'internal___owner'
-  | 'internal___type';
+  | 'internal___type'
+  | 'internal___contentFilePath';
 
 export type DirectoryGroupConnection = {
   totalCount: Scalars['Int'];
@@ -1314,6 +1573,11 @@ export type SiteSiteMetadataFilterInput = {
   keywords?: InputMaybe<StringQueryOperatorInput>;
 };
 
+export type SiteGraphqlTypegenFilterInput = {
+  typesOutputPath?: InputMaybe<StringQueryOperatorInput>;
+  generateOnBuild?: InputMaybe<BooleanQueryOperatorInput>;
+};
+
 export type SiteConnection = {
   totalCount: Scalars['Int'];
   edges: Array<SiteEdge>;
@@ -1367,7 +1631,8 @@ export type SiteFieldsEnum =
   | 'siteMetadata___keywords'
   | 'port'
   | 'host'
-  | 'graphqlTypegen'
+  | 'graphqlTypegen___typesOutputPath'
+  | 'graphqlTypegen___generateOnBuild'
   | 'polyfill'
   | 'pathPrefix'
   | 'jsxRuntime'
@@ -1388,6 +1653,7 @@ export type SiteFieldsEnum =
   | 'parent___parent___internal___mediaType'
   | 'parent___parent___internal___owner'
   | 'parent___parent___internal___type'
+  | 'parent___parent___internal___contentFilePath'
   | 'parent___children'
   | 'parent___children___id'
   | 'parent___children___parent___id'
@@ -1403,6 +1669,7 @@ export type SiteFieldsEnum =
   | 'parent___children___internal___mediaType'
   | 'parent___children___internal___owner'
   | 'parent___children___internal___type'
+  | 'parent___children___internal___contentFilePath'
   | 'parent___internal___content'
   | 'parent___internal___contentDigest'
   | 'parent___internal___description'
@@ -1411,6 +1678,7 @@ export type SiteFieldsEnum =
   | 'parent___internal___mediaType'
   | 'parent___internal___owner'
   | 'parent___internal___type'
+  | 'parent___internal___contentFilePath'
   | 'children'
   | 'children___id'
   | 'children___parent___id'
@@ -1427,6 +1695,7 @@ export type SiteFieldsEnum =
   | 'children___parent___internal___mediaType'
   | 'children___parent___internal___owner'
   | 'children___parent___internal___type'
+  | 'children___parent___internal___contentFilePath'
   | 'children___children'
   | 'children___children___id'
   | 'children___children___parent___id'
@@ -1442,6 +1711,7 @@ export type SiteFieldsEnum =
   | 'children___children___internal___mediaType'
   | 'children___children___internal___owner'
   | 'children___children___internal___type'
+  | 'children___children___internal___contentFilePath'
   | 'children___internal___content'
   | 'children___internal___contentDigest'
   | 'children___internal___description'
@@ -1450,6 +1720,7 @@ export type SiteFieldsEnum =
   | 'children___internal___mediaType'
   | 'children___internal___owner'
   | 'children___internal___type'
+  | 'children___internal___contentFilePath'
   | 'internal___content'
   | 'internal___contentDigest'
   | 'internal___description'
@@ -1457,7 +1728,8 @@ export type SiteFieldsEnum =
   | 'internal___ignoreType'
   | 'internal___mediaType'
   | 'internal___owner'
-  | 'internal___type';
+  | 'internal___type'
+  | 'internal___contentFilePath';
 
 export type SiteGroupConnection = {
   totalCount: Scalars['Int'];
@@ -1505,7 +1777,7 @@ export type SiteFilterInput = {
   siteMetadata?: InputMaybe<SiteSiteMetadataFilterInput>;
   port?: InputMaybe<IntQueryOperatorInput>;
   host?: InputMaybe<StringQueryOperatorInput>;
-  graphqlTypegen?: InputMaybe<BooleanQueryOperatorInput>;
+  graphqlTypegen?: InputMaybe<SiteGraphqlTypegenFilterInput>;
   polyfill?: InputMaybe<BooleanQueryOperatorInput>;
   pathPrefix?: InputMaybe<StringQueryOperatorInput>;
   jsxRuntime?: InputMaybe<StringQueryOperatorInput>;
@@ -1590,6 +1862,7 @@ export type SiteFunctionFieldsEnum =
   | 'parent___parent___internal___mediaType'
   | 'parent___parent___internal___owner'
   | 'parent___parent___internal___type'
+  | 'parent___parent___internal___contentFilePath'
   | 'parent___children'
   | 'parent___children___id'
   | 'parent___children___parent___id'
@@ -1605,6 +1878,7 @@ export type SiteFunctionFieldsEnum =
   | 'parent___children___internal___mediaType'
   | 'parent___children___internal___owner'
   | 'parent___children___internal___type'
+  | 'parent___children___internal___contentFilePath'
   | 'parent___internal___content'
   | 'parent___internal___contentDigest'
   | 'parent___internal___description'
@@ -1613,6 +1887,7 @@ export type SiteFunctionFieldsEnum =
   | 'parent___internal___mediaType'
   | 'parent___internal___owner'
   | 'parent___internal___type'
+  | 'parent___internal___contentFilePath'
   | 'children'
   | 'children___id'
   | 'children___parent___id'
@@ -1629,6 +1904,7 @@ export type SiteFunctionFieldsEnum =
   | 'children___parent___internal___mediaType'
   | 'children___parent___internal___owner'
   | 'children___parent___internal___type'
+  | 'children___parent___internal___contentFilePath'
   | 'children___children'
   | 'children___children___id'
   | 'children___children___parent___id'
@@ -1644,6 +1920,7 @@ export type SiteFunctionFieldsEnum =
   | 'children___children___internal___mediaType'
   | 'children___children___internal___owner'
   | 'children___children___internal___type'
+  | 'children___children___internal___contentFilePath'
   | 'children___internal___content'
   | 'children___internal___contentDigest'
   | 'children___internal___description'
@@ -1652,6 +1929,7 @@ export type SiteFunctionFieldsEnum =
   | 'children___internal___mediaType'
   | 'children___internal___owner'
   | 'children___internal___type'
+  | 'children___internal___contentFilePath'
   | 'internal___content'
   | 'internal___contentDigest'
   | 'internal___description'
@@ -1659,7 +1937,8 @@ export type SiteFunctionFieldsEnum =
   | 'internal___ignoreType'
   | 'internal___mediaType'
   | 'internal___owner'
-  | 'internal___type';
+  | 'internal___type'
+  | 'internal___contentFilePath';
 
 export type SiteFunctionGroupConnection = {
   totalCount: Scalars['Int'];
@@ -1822,6 +2101,7 @@ export type SitePageFieldsEnum =
   | 'pluginCreator___parent___internal___mediaType'
   | 'pluginCreator___parent___internal___owner'
   | 'pluginCreator___parent___internal___type'
+  | 'pluginCreator___parent___internal___contentFilePath'
   | 'pluginCreator___children'
   | 'pluginCreator___children___id'
   | 'pluginCreator___children___parent___id'
@@ -1837,6 +2117,7 @@ export type SitePageFieldsEnum =
   | 'pluginCreator___children___internal___mediaType'
   | 'pluginCreator___children___internal___owner'
   | 'pluginCreator___children___internal___type'
+  | 'pluginCreator___children___internal___contentFilePath'
   | 'pluginCreator___internal___content'
   | 'pluginCreator___internal___contentDigest'
   | 'pluginCreator___internal___description'
@@ -1845,6 +2126,7 @@ export type SitePageFieldsEnum =
   | 'pluginCreator___internal___mediaType'
   | 'pluginCreator___internal___owner'
   | 'pluginCreator___internal___type'
+  | 'pluginCreator___internal___contentFilePath'
   | 'id'
   | 'parent___id'
   | 'parent___parent___id'
@@ -1861,6 +2143,7 @@ export type SitePageFieldsEnum =
   | 'parent___parent___internal___mediaType'
   | 'parent___parent___internal___owner'
   | 'parent___parent___internal___type'
+  | 'parent___parent___internal___contentFilePath'
   | 'parent___children'
   | 'parent___children___id'
   | 'parent___children___parent___id'
@@ -1876,6 +2159,7 @@ export type SitePageFieldsEnum =
   | 'parent___children___internal___mediaType'
   | 'parent___children___internal___owner'
   | 'parent___children___internal___type'
+  | 'parent___children___internal___contentFilePath'
   | 'parent___internal___content'
   | 'parent___internal___contentDigest'
   | 'parent___internal___description'
@@ -1884,6 +2168,7 @@ export type SitePageFieldsEnum =
   | 'parent___internal___mediaType'
   | 'parent___internal___owner'
   | 'parent___internal___type'
+  | 'parent___internal___contentFilePath'
   | 'children'
   | 'children___id'
   | 'children___parent___id'
@@ -1900,6 +2185,7 @@ export type SitePageFieldsEnum =
   | 'children___parent___internal___mediaType'
   | 'children___parent___internal___owner'
   | 'children___parent___internal___type'
+  | 'children___parent___internal___contentFilePath'
   | 'children___children'
   | 'children___children___id'
   | 'children___children___parent___id'
@@ -1915,6 +2201,7 @@ export type SitePageFieldsEnum =
   | 'children___children___internal___mediaType'
   | 'children___children___internal___owner'
   | 'children___children___internal___type'
+  | 'children___children___internal___contentFilePath'
   | 'children___internal___content'
   | 'children___internal___contentDigest'
   | 'children___internal___description'
@@ -1923,6 +2210,7 @@ export type SitePageFieldsEnum =
   | 'children___internal___mediaType'
   | 'children___internal___owner'
   | 'children___internal___type'
+  | 'children___internal___contentFilePath'
   | 'internal___content'
   | 'internal___contentDigest'
   | 'internal___description'
@@ -1930,7 +2218,8 @@ export type SitePageFieldsEnum =
   | 'internal___ignoreType'
   | 'internal___mediaType'
   | 'internal___owner'
-  | 'internal___type';
+  | 'internal___type'
+  | 'internal___contentFilePath';
 
 export type SitePageGroupConnection = {
   totalCount: Scalars['Int'];
@@ -2063,6 +2352,7 @@ export type SitePluginFieldsEnum =
   | 'parent___parent___internal___mediaType'
   | 'parent___parent___internal___owner'
   | 'parent___parent___internal___type'
+  | 'parent___parent___internal___contentFilePath'
   | 'parent___children'
   | 'parent___children___id'
   | 'parent___children___parent___id'
@@ -2078,6 +2368,7 @@ export type SitePluginFieldsEnum =
   | 'parent___children___internal___mediaType'
   | 'parent___children___internal___owner'
   | 'parent___children___internal___type'
+  | 'parent___children___internal___contentFilePath'
   | 'parent___internal___content'
   | 'parent___internal___contentDigest'
   | 'parent___internal___description'
@@ -2086,6 +2377,7 @@ export type SitePluginFieldsEnum =
   | 'parent___internal___mediaType'
   | 'parent___internal___owner'
   | 'parent___internal___type'
+  | 'parent___internal___contentFilePath'
   | 'children'
   | 'children___id'
   | 'children___parent___id'
@@ -2102,6 +2394,7 @@ export type SitePluginFieldsEnum =
   | 'children___parent___internal___mediaType'
   | 'children___parent___internal___owner'
   | 'children___parent___internal___type'
+  | 'children___parent___internal___contentFilePath'
   | 'children___children'
   | 'children___children___id'
   | 'children___children___parent___id'
@@ -2117,6 +2410,7 @@ export type SitePluginFieldsEnum =
   | 'children___children___internal___mediaType'
   | 'children___children___internal___owner'
   | 'children___children___internal___type'
+  | 'children___children___internal___contentFilePath'
   | 'children___internal___content'
   | 'children___internal___contentDigest'
   | 'children___internal___description'
@@ -2125,6 +2419,7 @@ export type SitePluginFieldsEnum =
   | 'children___internal___mediaType'
   | 'children___internal___owner'
   | 'children___internal___type'
+  | 'children___internal___contentFilePath'
   | 'internal___content'
   | 'internal___contentDigest'
   | 'internal___description'
@@ -2132,7 +2427,8 @@ export type SitePluginFieldsEnum =
   | 'internal___ignoreType'
   | 'internal___mediaType'
   | 'internal___owner'
-  | 'internal___type';
+  | 'internal___type'
+  | 'internal___contentFilePath';
 
 export type SitePluginGroupConnection = {
   totalCount: Scalars['Int'];
@@ -2243,6 +2539,7 @@ export type SiteBuildMetadataFieldsEnum =
   | 'parent___parent___internal___mediaType'
   | 'parent___parent___internal___owner'
   | 'parent___parent___internal___type'
+  | 'parent___parent___internal___contentFilePath'
   | 'parent___children'
   | 'parent___children___id'
   | 'parent___children___parent___id'
@@ -2258,6 +2555,7 @@ export type SiteBuildMetadataFieldsEnum =
   | 'parent___children___internal___mediaType'
   | 'parent___children___internal___owner'
   | 'parent___children___internal___type'
+  | 'parent___children___internal___contentFilePath'
   | 'parent___internal___content'
   | 'parent___internal___contentDigest'
   | 'parent___internal___description'
@@ -2266,6 +2564,7 @@ export type SiteBuildMetadataFieldsEnum =
   | 'parent___internal___mediaType'
   | 'parent___internal___owner'
   | 'parent___internal___type'
+  | 'parent___internal___contentFilePath'
   | 'children'
   | 'children___id'
   | 'children___parent___id'
@@ -2282,6 +2581,7 @@ export type SiteBuildMetadataFieldsEnum =
   | 'children___parent___internal___mediaType'
   | 'children___parent___internal___owner'
   | 'children___parent___internal___type'
+  | 'children___parent___internal___contentFilePath'
   | 'children___children'
   | 'children___children___id'
   | 'children___children___parent___id'
@@ -2297,6 +2597,7 @@ export type SiteBuildMetadataFieldsEnum =
   | 'children___children___internal___mediaType'
   | 'children___children___internal___owner'
   | 'children___children___internal___type'
+  | 'children___children___internal___contentFilePath'
   | 'children___internal___content'
   | 'children___internal___contentDigest'
   | 'children___internal___description'
@@ -2305,6 +2606,7 @@ export type SiteBuildMetadataFieldsEnum =
   | 'children___internal___mediaType'
   | 'children___internal___owner'
   | 'children___internal___type'
+  | 'children___internal___contentFilePath'
   | 'internal___content'
   | 'internal___contentDigest'
   | 'internal___description'
@@ -2312,7 +2614,8 @@ export type SiteBuildMetadataFieldsEnum =
   | 'internal___ignoreType'
   | 'internal___mediaType'
   | 'internal___owner'
-  | 'internal___type';
+  | 'internal___type'
+  | 'internal___contentFilePath';
 
 export type SiteBuildMetadataGroupConnection = {
   totalCount: Scalars['Int'];
@@ -2368,52 +2671,124 @@ export type SiteBuildMetadataSortInput = {
   order?: InputMaybe<Array<InputMaybe<SortOrderEnum>>>;
 };
 
-export type MusicsYamlConnection = {
+export type MusicConnection = {
   totalCount: Scalars['Int'];
-  edges: Array<MusicsYamlEdge>;
-  nodes: Array<MusicsYaml>;
+  edges: Array<MusicEdge>;
+  nodes: Array<Music>;
   pageInfo: PageInfo;
   distinct: Array<Scalars['String']>;
   max?: Maybe<Scalars['Float']>;
   min?: Maybe<Scalars['Float']>;
   sum?: Maybe<Scalars['Float']>;
-  group: Array<MusicsYamlGroupConnection>;
+  group: Array<MusicGroupConnection>;
 };
 
 
-export type MusicsYamlConnectionDistinctArgs = {
-  field: MusicsYamlFieldsEnum;
+export type MusicConnectionDistinctArgs = {
+  field: MusicFieldsEnum;
 };
 
 
-export type MusicsYamlConnectionMaxArgs = {
-  field: MusicsYamlFieldsEnum;
+export type MusicConnectionMaxArgs = {
+  field: MusicFieldsEnum;
 };
 
 
-export type MusicsYamlConnectionMinArgs = {
-  field: MusicsYamlFieldsEnum;
+export type MusicConnectionMinArgs = {
+  field: MusicFieldsEnum;
 };
 
 
-export type MusicsYamlConnectionSumArgs = {
-  field: MusicsYamlFieldsEnum;
+export type MusicConnectionSumArgs = {
+  field: MusicFieldsEnum;
 };
 
 
-export type MusicsYamlConnectionGroupArgs = {
+export type MusicConnectionGroupArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   limit?: InputMaybe<Scalars['Int']>;
-  field: MusicsYamlFieldsEnum;
+  field: MusicFieldsEnum;
 };
 
-export type MusicsYamlEdge = {
-  next?: Maybe<MusicsYaml>;
-  node: MusicsYaml;
-  previous?: Maybe<MusicsYaml>;
+export type MusicEdge = {
+  next?: Maybe<Music>;
+  node: Music;
+  previous?: Maybe<Music>;
 };
 
-export type MusicsYamlFieldsEnum =
+export type MusicFieldsEnum =
+  | 'video___musics'
+  | 'video___musics___video___musics'
+  | 'video___musics___video___date'
+  | 'video___musics___video___videoId'
+  | 'video___musics___video___videoTitle'
+  | 'video___musics___video___id'
+  | 'video___musics___video___children'
+  | 'video___musics___start'
+  | 'video___musics___end'
+  | 'video___musics___id'
+  | 'video___musics___parent___id'
+  | 'video___musics___parent___children'
+  | 'video___musics___children'
+  | 'video___musics___children___id'
+  | 'video___musics___children___children'
+  | 'video___musics___internal___content'
+  | 'video___musics___internal___contentDigest'
+  | 'video___musics___internal___description'
+  | 'video___musics___internal___fieldOwners'
+  | 'video___musics___internal___ignoreType'
+  | 'video___musics___internal___mediaType'
+  | 'video___musics___internal___owner'
+  | 'video___musics___internal___type'
+  | 'video___musics___internal___contentFilePath'
+  | 'video___date'
+  | 'video___videoId'
+  | 'video___videoTitle'
+  | 'video___id'
+  | 'video___parent___id'
+  | 'video___parent___parent___id'
+  | 'video___parent___parent___children'
+  | 'video___parent___children'
+  | 'video___parent___children___id'
+  | 'video___parent___children___children'
+  | 'video___parent___internal___content'
+  | 'video___parent___internal___contentDigest'
+  | 'video___parent___internal___description'
+  | 'video___parent___internal___fieldOwners'
+  | 'video___parent___internal___ignoreType'
+  | 'video___parent___internal___mediaType'
+  | 'video___parent___internal___owner'
+  | 'video___parent___internal___type'
+  | 'video___parent___internal___contentFilePath'
+  | 'video___children'
+  | 'video___children___id'
+  | 'video___children___parent___id'
+  | 'video___children___parent___children'
+  | 'video___children___children'
+  | 'video___children___children___id'
+  | 'video___children___children___children'
+  | 'video___children___internal___content'
+  | 'video___children___internal___contentDigest'
+  | 'video___children___internal___description'
+  | 'video___children___internal___fieldOwners'
+  | 'video___children___internal___ignoreType'
+  | 'video___children___internal___mediaType'
+  | 'video___children___internal___owner'
+  | 'video___children___internal___type'
+  | 'video___children___internal___contentFilePath'
+  | 'video___internal___content'
+  | 'video___internal___contentDigest'
+  | 'video___internal___description'
+  | 'video___internal___fieldOwners'
+  | 'video___internal___ignoreType'
+  | 'video___internal___mediaType'
+  | 'video___internal___owner'
+  | 'video___internal___type'
+  | 'video___internal___contentFilePath'
+  | 'start'
+  | 'end'
+  | 'meta___ja___title'
+  | 'meta___ja___artist'
   | 'id'
   | 'parent___id'
   | 'parent___parent___id'
@@ -2430,6 +2805,7 @@ export type MusicsYamlFieldsEnum =
   | 'parent___parent___internal___mediaType'
   | 'parent___parent___internal___owner'
   | 'parent___parent___internal___type'
+  | 'parent___parent___internal___contentFilePath'
   | 'parent___children'
   | 'parent___children___id'
   | 'parent___children___parent___id'
@@ -2445,6 +2821,7 @@ export type MusicsYamlFieldsEnum =
   | 'parent___children___internal___mediaType'
   | 'parent___children___internal___owner'
   | 'parent___children___internal___type'
+  | 'parent___children___internal___contentFilePath'
   | 'parent___internal___content'
   | 'parent___internal___contentDigest'
   | 'parent___internal___description'
@@ -2453,6 +2830,7 @@ export type MusicsYamlFieldsEnum =
   | 'parent___internal___mediaType'
   | 'parent___internal___owner'
   | 'parent___internal___type'
+  | 'parent___internal___contentFilePath'
   | 'children'
   | 'children___id'
   | 'children___parent___id'
@@ -2469,6 +2847,7 @@ export type MusicsYamlFieldsEnum =
   | 'children___parent___internal___mediaType'
   | 'children___parent___internal___owner'
   | 'children___parent___internal___type'
+  | 'children___parent___internal___contentFilePath'
   | 'children___children'
   | 'children___children___id'
   | 'children___children___parent___id'
@@ -2484,6 +2863,7 @@ export type MusicsYamlFieldsEnum =
   | 'children___children___internal___mediaType'
   | 'children___children___internal___owner'
   | 'children___children___internal___type'
+  | 'children___children___internal___contentFilePath'
   | 'children___internal___content'
   | 'children___internal___contentDigest'
   | 'children___internal___description'
@@ -2492,6 +2872,7 @@ export type MusicsYamlFieldsEnum =
   | 'children___internal___mediaType'
   | 'children___internal___owner'
   | 'children___internal___type'
+  | 'children___internal___contentFilePath'
   | 'internal___content'
   | 'internal___contentDigest'
   | 'internal___description'
@@ -2500,56 +2881,309 @@ export type MusicsYamlFieldsEnum =
   | 'internal___mediaType'
   | 'internal___owner'
   | 'internal___type'
-  | 'videoId'
-  | 'videoTitle'
-  | 'start'
-  | 'end'
-  | 'meta___ja___title'
-  | 'meta___ja___artist';
+  | 'internal___contentFilePath';
 
-export type MusicsYamlGroupConnection = {
+export type MusicGroupConnection = {
   totalCount: Scalars['Int'];
-  edges: Array<MusicsYamlEdge>;
-  nodes: Array<MusicsYaml>;
+  edges: Array<MusicEdge>;
+  nodes: Array<Music>;
   pageInfo: PageInfo;
   distinct: Array<Scalars['String']>;
   max?: Maybe<Scalars['Float']>;
   min?: Maybe<Scalars['Float']>;
   sum?: Maybe<Scalars['Float']>;
-  group: Array<MusicsYamlGroupConnection>;
+  group: Array<MusicGroupConnection>;
   field: Scalars['String'];
   fieldValue?: Maybe<Scalars['String']>;
 };
 
 
-export type MusicsYamlGroupConnectionDistinctArgs = {
-  field: MusicsYamlFieldsEnum;
+export type MusicGroupConnectionDistinctArgs = {
+  field: MusicFieldsEnum;
 };
 
 
-export type MusicsYamlGroupConnectionMaxArgs = {
-  field: MusicsYamlFieldsEnum;
+export type MusicGroupConnectionMaxArgs = {
+  field: MusicFieldsEnum;
 };
 
 
-export type MusicsYamlGroupConnectionMinArgs = {
-  field: MusicsYamlFieldsEnum;
+export type MusicGroupConnectionMinArgs = {
+  field: MusicFieldsEnum;
 };
 
 
-export type MusicsYamlGroupConnectionSumArgs = {
-  field: MusicsYamlFieldsEnum;
+export type MusicGroupConnectionSumArgs = {
+  field: MusicFieldsEnum;
 };
 
 
-export type MusicsYamlGroupConnectionGroupArgs = {
+export type MusicGroupConnectionGroupArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   limit?: InputMaybe<Scalars['Int']>;
-  field: MusicsYamlFieldsEnum;
+  field: MusicFieldsEnum;
 };
 
-export type MusicsYamlSortInput = {
-  fields?: InputMaybe<Array<InputMaybe<MusicsYamlFieldsEnum>>>;
+export type MusicSortInput = {
+  fields?: InputMaybe<Array<InputMaybe<MusicFieldsEnum>>>;
+  order?: InputMaybe<Array<InputMaybe<SortOrderEnum>>>;
+};
+
+export type VideoConnection = {
+  totalCount: Scalars['Int'];
+  edges: Array<VideoEdge>;
+  nodes: Array<Video>;
+  pageInfo: PageInfo;
+  distinct: Array<Scalars['String']>;
+  max?: Maybe<Scalars['Float']>;
+  min?: Maybe<Scalars['Float']>;
+  sum?: Maybe<Scalars['Float']>;
+  group: Array<VideoGroupConnection>;
+};
+
+
+export type VideoConnectionDistinctArgs = {
+  field: VideoFieldsEnum;
+};
+
+
+export type VideoConnectionMaxArgs = {
+  field: VideoFieldsEnum;
+};
+
+
+export type VideoConnectionMinArgs = {
+  field: VideoFieldsEnum;
+};
+
+
+export type VideoConnectionSumArgs = {
+  field: VideoFieldsEnum;
+};
+
+
+export type VideoConnectionGroupArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  field: VideoFieldsEnum;
+};
+
+export type VideoEdge = {
+  next?: Maybe<Video>;
+  node: Video;
+  previous?: Maybe<Video>;
+};
+
+export type VideoFieldsEnum =
+  | 'musics'
+  | 'musics___video___musics'
+  | 'musics___video___musics___start'
+  | 'musics___video___musics___end'
+  | 'musics___video___musics___id'
+  | 'musics___video___musics___children'
+  | 'musics___video___date'
+  | 'musics___video___videoId'
+  | 'musics___video___videoTitle'
+  | 'musics___video___id'
+  | 'musics___video___parent___id'
+  | 'musics___video___parent___children'
+  | 'musics___video___children'
+  | 'musics___video___children___id'
+  | 'musics___video___children___children'
+  | 'musics___video___internal___content'
+  | 'musics___video___internal___contentDigest'
+  | 'musics___video___internal___description'
+  | 'musics___video___internal___fieldOwners'
+  | 'musics___video___internal___ignoreType'
+  | 'musics___video___internal___mediaType'
+  | 'musics___video___internal___owner'
+  | 'musics___video___internal___type'
+  | 'musics___video___internal___contentFilePath'
+  | 'musics___start'
+  | 'musics___end'
+  | 'musics___meta___ja___title'
+  | 'musics___meta___ja___artist'
+  | 'musics___id'
+  | 'musics___parent___id'
+  | 'musics___parent___parent___id'
+  | 'musics___parent___parent___children'
+  | 'musics___parent___children'
+  | 'musics___parent___children___id'
+  | 'musics___parent___children___children'
+  | 'musics___parent___internal___content'
+  | 'musics___parent___internal___contentDigest'
+  | 'musics___parent___internal___description'
+  | 'musics___parent___internal___fieldOwners'
+  | 'musics___parent___internal___ignoreType'
+  | 'musics___parent___internal___mediaType'
+  | 'musics___parent___internal___owner'
+  | 'musics___parent___internal___type'
+  | 'musics___parent___internal___contentFilePath'
+  | 'musics___children'
+  | 'musics___children___id'
+  | 'musics___children___parent___id'
+  | 'musics___children___parent___children'
+  | 'musics___children___children'
+  | 'musics___children___children___id'
+  | 'musics___children___children___children'
+  | 'musics___children___internal___content'
+  | 'musics___children___internal___contentDigest'
+  | 'musics___children___internal___description'
+  | 'musics___children___internal___fieldOwners'
+  | 'musics___children___internal___ignoreType'
+  | 'musics___children___internal___mediaType'
+  | 'musics___children___internal___owner'
+  | 'musics___children___internal___type'
+  | 'musics___children___internal___contentFilePath'
+  | 'musics___internal___content'
+  | 'musics___internal___contentDigest'
+  | 'musics___internal___description'
+  | 'musics___internal___fieldOwners'
+  | 'musics___internal___ignoreType'
+  | 'musics___internal___mediaType'
+  | 'musics___internal___owner'
+  | 'musics___internal___type'
+  | 'musics___internal___contentFilePath'
+  | 'date'
+  | 'videoId'
+  | 'videoTitle'
+  | 'id'
+  | 'parent___id'
+  | 'parent___parent___id'
+  | 'parent___parent___parent___id'
+  | 'parent___parent___parent___children'
+  | 'parent___parent___children'
+  | 'parent___parent___children___id'
+  | 'parent___parent___children___children'
+  | 'parent___parent___internal___content'
+  | 'parent___parent___internal___contentDigest'
+  | 'parent___parent___internal___description'
+  | 'parent___parent___internal___fieldOwners'
+  | 'parent___parent___internal___ignoreType'
+  | 'parent___parent___internal___mediaType'
+  | 'parent___parent___internal___owner'
+  | 'parent___parent___internal___type'
+  | 'parent___parent___internal___contentFilePath'
+  | 'parent___children'
+  | 'parent___children___id'
+  | 'parent___children___parent___id'
+  | 'parent___children___parent___children'
+  | 'parent___children___children'
+  | 'parent___children___children___id'
+  | 'parent___children___children___children'
+  | 'parent___children___internal___content'
+  | 'parent___children___internal___contentDigest'
+  | 'parent___children___internal___description'
+  | 'parent___children___internal___fieldOwners'
+  | 'parent___children___internal___ignoreType'
+  | 'parent___children___internal___mediaType'
+  | 'parent___children___internal___owner'
+  | 'parent___children___internal___type'
+  | 'parent___children___internal___contentFilePath'
+  | 'parent___internal___content'
+  | 'parent___internal___contentDigest'
+  | 'parent___internal___description'
+  | 'parent___internal___fieldOwners'
+  | 'parent___internal___ignoreType'
+  | 'parent___internal___mediaType'
+  | 'parent___internal___owner'
+  | 'parent___internal___type'
+  | 'parent___internal___contentFilePath'
+  | 'children'
+  | 'children___id'
+  | 'children___parent___id'
+  | 'children___parent___parent___id'
+  | 'children___parent___parent___children'
+  | 'children___parent___children'
+  | 'children___parent___children___id'
+  | 'children___parent___children___children'
+  | 'children___parent___internal___content'
+  | 'children___parent___internal___contentDigest'
+  | 'children___parent___internal___description'
+  | 'children___parent___internal___fieldOwners'
+  | 'children___parent___internal___ignoreType'
+  | 'children___parent___internal___mediaType'
+  | 'children___parent___internal___owner'
+  | 'children___parent___internal___type'
+  | 'children___parent___internal___contentFilePath'
+  | 'children___children'
+  | 'children___children___id'
+  | 'children___children___parent___id'
+  | 'children___children___parent___children'
+  | 'children___children___children'
+  | 'children___children___children___id'
+  | 'children___children___children___children'
+  | 'children___children___internal___content'
+  | 'children___children___internal___contentDigest'
+  | 'children___children___internal___description'
+  | 'children___children___internal___fieldOwners'
+  | 'children___children___internal___ignoreType'
+  | 'children___children___internal___mediaType'
+  | 'children___children___internal___owner'
+  | 'children___children___internal___type'
+  | 'children___children___internal___contentFilePath'
+  | 'children___internal___content'
+  | 'children___internal___contentDigest'
+  | 'children___internal___description'
+  | 'children___internal___fieldOwners'
+  | 'children___internal___ignoreType'
+  | 'children___internal___mediaType'
+  | 'children___internal___owner'
+  | 'children___internal___type'
+  | 'children___internal___contentFilePath'
+  | 'internal___content'
+  | 'internal___contentDigest'
+  | 'internal___description'
+  | 'internal___fieldOwners'
+  | 'internal___ignoreType'
+  | 'internal___mediaType'
+  | 'internal___owner'
+  | 'internal___type'
+  | 'internal___contentFilePath';
+
+export type VideoGroupConnection = {
+  totalCount: Scalars['Int'];
+  edges: Array<VideoEdge>;
+  nodes: Array<Video>;
+  pageInfo: PageInfo;
+  distinct: Array<Scalars['String']>;
+  max?: Maybe<Scalars['Float']>;
+  min?: Maybe<Scalars['Float']>;
+  sum?: Maybe<Scalars['Float']>;
+  group: Array<VideoGroupConnection>;
+  field: Scalars['String'];
+  fieldValue?: Maybe<Scalars['String']>;
+};
+
+
+export type VideoGroupConnectionDistinctArgs = {
+  field: VideoFieldsEnum;
+};
+
+
+export type VideoGroupConnectionMaxArgs = {
+  field: VideoFieldsEnum;
+};
+
+
+export type VideoGroupConnectionMinArgs = {
+  field: VideoFieldsEnum;
+};
+
+
+export type VideoGroupConnectionSumArgs = {
+  field: VideoFieldsEnum;
+};
+
+
+export type VideoGroupConnectionGroupArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  field: VideoFieldsEnum;
+};
+
+export type VideoSortInput = {
+  fields?: InputMaybe<Array<InputMaybe<VideoFieldsEnum>>>;
   order?: InputMaybe<Array<InputMaybe<SortOrderEnum>>>;
 };
 
@@ -2561,4 +3195,4 @@ export type SeoQuery = { site?: { siteMetadata?: { title?: string | null, descri
 export type SongsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SongsQuery = { allMusicsYaml: { nodes: Array<{ videoId?: string | null, videoTitle?: string | null, start?: string | null, end?: string | null, meta?: { ja?: { artist?: string | null, title?: string | null } | null } | null }> } };
+export type SongsQuery = { allMusic: { nodes: Array<{ start?: string | null, end?: string | null, video?: { videoId?: string | null, videoTitle?: string | null, date?: any | null } | null, meta?: { ja?: { artist?: string | null, title?: string | null } | null } | null }> } };

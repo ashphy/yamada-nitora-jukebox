@@ -1,0 +1,35 @@
+.share {
+  width: fit-content;
+  padding: 5px 10px;
+  margin: 0;
+  font-size: 12px;
+  color: #fff;
+  vertical-align: middle;
+  background-color: #1da1f2;
+  border-radius: 5px;
+}
+
+.share svg {
+  vertical-align: middle;
+}
+
+.share a:link {
+  color: #fff;
+  text-decoration: none;
+}
+
+.share a:visited {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* for mobile */
+@media screen and (max-width: 959px) {
+  .share {
+    margin-left: auto;
+  }
+
+  .shareText {
+    display: none;
+  }
+}
