@@ -51,7 +51,7 @@
   align-items: center;
   justify-content: space-evenly;
   width: 400px;
-  padding: 10px 20px;
+  padding: 0px 20px;
   margin-top: 15px;
   user-select: none;
   background-color: #8f282d;
@@ -60,6 +60,7 @@
 }
 
 .controlIcon {
+  padding: 10px;
   color: #faebe8;
   filter: drop-shadow(0 0 5px #000);
 }
@@ -69,12 +70,15 @@
 }
 
 .controlIconEnable {
-  color: #ffcce6;
+  padding: 10px;
+  color: #8f282d;
+  background-color: #faebe8;
   filter: none;
+  border-radius: 10px;
 }
 
 .controlIconEnable:hover {
-  color: #fff;
+  background-color: #fff;
 }
 
 .controlIcon:active {
