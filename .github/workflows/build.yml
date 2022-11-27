@@ -3,7 +3,7 @@ name: build
 on: push
 
 env:
-  BUCKET_NAME : "<example-bucket-name>"
+  BUCKET_NAME : 'jukebox.ashphy.com'
   AWS_REGION : 'us-west-2'
 
 permissions:
