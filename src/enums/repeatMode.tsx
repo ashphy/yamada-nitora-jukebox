@@ -1,1 +1,1 @@
-type RepeatMode = 'none' | 'one' | 'all';
+export type RepeatMode = 'none' | 'one' | 'all';

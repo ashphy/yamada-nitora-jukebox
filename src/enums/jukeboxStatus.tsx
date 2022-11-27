@@ -1,1 +1,1 @@
-type JukeBoxStatus = 'stop' | 'play'
+export type JukeBoxStatus = 'stop' | 'play'

@@ -1,1 +1,1 @@
-type SortItem = 'title' | 'artist' | 'source';
+export type SortItem = 'title' | 'artist' | 'source';

@@ -27,6 +27,9 @@ import { NumberParam, useQueryParam } from 'use-query-params';
 import GitHubButton from 'react-github-btn'
 import { Music } from '../models/music';
 import { TwitterShare } from '../components/twitter_share';
+import { SortItem } from '../models/sort_item';
+import { JukeBoxStatus } from '../enums/jukeboxStatus';
+import { RepeatMode } from '../enums/repeatMode';
 
 const playerDefaultOpts: YouTubeProps['opts'] = {
   width: 480,
@@ -38,7 +41,7 @@ const playerDefaultOpts: YouTubeProps['opts'] = {
   }
 }
 
-const playerHeight = function (width: number): number {
+const playerHeight = function(width: number): number {
   return Math.round(width * (9 / 16));
 };
 
@@ -216,8 +219,8 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
   useEffect(() => {
     const clientRect = currentSongRow.current?.getBoundingClientRect();
     if (clientRect !== null && clientRect !== undefined) {
-      const px = window.scrollX + clientRect.left;
-      const py = window.scrollY + clientRect.top;
+      // const px = window.scrollX + clientRect.left;
+      // const py = window.scrollY + clientRect.top;
       // console.log(`scroll px: ${px}, py: ${py}`);
     }
   }, [playlistIndex, playlist]);

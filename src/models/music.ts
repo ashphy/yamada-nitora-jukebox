@@ -1,8 +1,10 @@
 import dayjs, { Dayjs } from 'dayjs';
+import { SortItem } from './sort_item';
 
-function assertIsDefined<T> (val: T): asserts val is NonNullable<T> {
+function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
   if (val === undefined || val === null) {
     throw new Error(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `Expected 'val' to be defined, but received ${val}`
     );
   }
@@ -37,7 +39,7 @@ export class Music {
   artist: string
   title: string
 
-  constructor (id: number, node: MusicNode) {
+  constructor(id: number, node: MusicNode) {
     assertIsDefined(node.video);
     assertIsDefined(node.video.videoId);
     assertIsDefined(node.video.videoTitle);
@@ -54,14 +56,14 @@ export class Music {
     this.videoTitle = node.video.videoTitle;
     this.date = dayjs(node.video.date, 'YYYY-MM-DD');
 
-    this.start = node.start ? this.convertTimeToSeconds(node.start) : undefined;
-    this.end = node.end ? this.convertTimeToSeconds(node.end) : undefined;
+    this.start = (node.start != null) ? this.convertTimeToSeconds(node.start) : undefined;
+    this.end = (node.end != null) ? this.convertTimeToSeconds(node.end) : undefined;
 
     this.artist = node.meta.ja.artist;
     this.title = node.meta.ja.title;
   }
 
-  get youtubeUrl (): string {
+  get youtubeUrl(): string {
     const t = this.start != null ? `&t=${this.start}` : '';
     return `https://www.youtube.com/watch?v=${this.videoId}${t}`;
   }
@@ -82,8 +84,8 @@ export class Music {
         // Sort by video published date
         return (a, b) => {
           const dateDiff = a.date.diff(b.date);
-          if (dateDiff == 0) {
-            if (a.start && b.start) {
+          if (dateDiff === 0) {
+            if ((a.start != null) && (b.start != null)) {
               return a.start - b.start;
             }
           }

@@ -8,14 +8,13 @@ type LayoutProps = Required<{
   readonly children: ReactElement
 }>
 
-export const Layout = ({ children }: LayoutProps) => {
-  const { site } = useStaticQuery(query);
-  const {
-    title,
-    description,
-    siteUrl,
-    keywords
-  } = site.siteMetadata
+export const Layout = ({ children }: LayoutProps): JSX.Element => {
+  const { site } = useStaticQuery<Queries.SEOQuery>(query);
+
+  const title = site?.siteMetadata?.title ?? '';
+  const description = site?.siteMetadata?.description ?? '';
+  const siteUrl = site?.siteMetadata?.siteUrl ?? '';
+  const keywords = site?.siteMetadata?.keywords ?? '';
 
   const defaultImage = `${siteUrl}${ogp_image}`;
 
