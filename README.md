@@ -1,4 +1,4 @@
-# 山田ニトラジュークボックス
+# 山田ニトラジュークボックス [![CI](https://github.com/ashphy/yamada-nitora-jukebox/actions/workflows/build.yml/badge.svg)](https://github.com/ashphy/yamada-nitora-jukebox/actions/workflows/build.yml)
 
 山田ニトラさんが歌った楽曲をまとめて再生できるサイトです。
 非公式ファンサイトです。
