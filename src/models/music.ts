@@ -1,6 +1,6 @@
-import dayjs, {Dayjs} from "dayjs";
+import dayjs, { Dayjs } from 'dayjs';
 
-function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
+function assertIsDefined<T> (val: T): asserts val is NonNullable<T> {
   if (val === undefined || val === null) {
     throw new Error(
       `Expected 'val' to be defined, but received ${val}`
@@ -8,21 +8,21 @@ function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
   }
 }
 
-type MusicNode = {
-  start?: string | null,
-  end?: string | null,
+interface MusicNode {
+  start?: string | null
+  end?: string | null
   video?: {
-    videoId?: string | null,
-    videoTitle?: string | null,
+    videoId?: string | null
+    videoTitle?: string | null
     date?: any | null
-  } | null,
+  } | null
   meta?: {
     ja?: {
-      artist?: string | null,
+      artist?: string | null
       title?: string | null
     } | null
   } | null
-};
+}
 
 export class Music {
   id: number
@@ -37,7 +37,7 @@ export class Music {
   artist: string
   title: string
 
-  constructor(id: number, node: MusicNode) {
+  constructor (id: number, node: MusicNode) {
     assertIsDefined(node.video);
     assertIsDefined(node.video.videoId);
     assertIsDefined(node.video.videoTitle);
@@ -61,24 +61,24 @@ export class Music {
     this.title = node.meta.ja.title;
   }
 
-  get youtubeUrl(): string {
+  get youtubeUrl (): string {
     const t = this.start != null ? `&t=${this.start}` : '';
     return `https://www.youtube.com/watch?v=${this.videoId}${t}`;
   }
 
   static getSorter = (sortItem: SortItem): ((a: Music, b: Music) => number) | undefined => {
     switch (sortItem) {
-      case "title":
+      case 'title':
         return (a, b) => {
           const c = new Intl.Collator('ja').compare;
           return c(a.title, b.title);
         };
-      case "artist":
+      case 'artist':
         return (a, b) => {
           const c = new Intl.Collator('ja').compare;
           return c(a.artist, b.artist);
         };
-      case "source":
+      case 'source':
         // Sort by video published date
         return (a, b) => {
           const dateDiff = a.date.diff(b.date);
@@ -95,7 +95,7 @@ export class Music {
   }
 
   convertTimeToSeconds = (time: string): number => {
-    return time.split(":").reverse().reduce((sum, item, index) => {
+    return time.split(':').reverse().reduce((sum, item, index) => {
       return sum + (parseInt(item) * (60 ** index));
     }, 0);
   }

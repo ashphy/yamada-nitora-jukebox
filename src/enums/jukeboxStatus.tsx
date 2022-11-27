@@ -1,1 +1,1 @@
-type JukeBoxStatus = "stop" | "play"
+type JukeBoxStatus = 'stop' | 'play'

@@ -1,1 +1,1 @@
-type RepeatMode = "none" | "one" | "all";
+type RepeatMode = 'none' | 'one' | 'all';

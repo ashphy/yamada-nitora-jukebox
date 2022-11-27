@@ -34,7 +34,7 @@ const playerDefaultOpts: YouTubeProps['opts'] = {
   playerVars: {
     origin: 'https://jukebox.ashphy.com/',
     start: undefined,
-    end: undefined,
+    end: undefined
   }
 }
 
