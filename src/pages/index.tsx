@@ -383,7 +383,7 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
                   }}>
                     {song.artist ?? '--'}
                   </td>
-                  <td className={style.songSource} onClick={() => {
+                  <td className={style.songSource} title={song.videoTitle} onClick={() => {
                     playBySongId(song.id)
                   }}>
                     {song.videoTitle}
