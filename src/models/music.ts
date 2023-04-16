@@ -1,11 +1,11 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { SortItem } from './sort_item';
 
-function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
+function assertIsDefined<T>(name: string, val: T): asserts val is NonNullable<T> {
   if (val === undefined || val === null) {
     throw new Error(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      `Expected 'val' to be defined, but received ${val}`
+      `Expected 'val' for ${name} to be defined, but received ${val}`
     );
   }
 }
@@ -40,15 +40,14 @@ export class Music {
   title: string
 
   constructor(id: number, node: MusicNode) {
-    assertIsDefined(node.video);
-    assertIsDefined(node.video.videoId);
-    assertIsDefined(node.video.videoTitle);
-    assertIsDefined(node.video.date);
-    assertIsDefined(node.meta);
-    assertIsDefined(node.meta.ja);
-    assertIsDefined(node.meta.ja);
-    assertIsDefined(node.meta.ja.artist);
-    assertIsDefined(node.meta.ja.title);
+    assertIsDefined('video', node.video);
+    assertIsDefined('videoId', node.video.videoId);
+    assertIsDefined('videoTitle', node.video.videoTitle);
+    assertIsDefined('date', node.video.date);
+    assertIsDefined('meta', node.meta);
+    assertIsDefined('ja', node.meta.ja);
+    assertIsDefined('ja.artist', node.meta.ja.artist);
+    assertIsDefined('ja.title', node.meta.ja.title);
 
     this.id = id;
 
