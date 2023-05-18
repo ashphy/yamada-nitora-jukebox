@@ -1,7 +1,10 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { SortItem } from './sort_item';
 
-function assertIsDefined<T>(name: string, val: T): asserts val is NonNullable<T> {
+function assertIsDefined<T>(
+  name: string,
+  val: T
+): asserts val is NonNullable<T> {
   if (val === undefined || val === null) {
     throw new Error(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -11,33 +14,33 @@ function assertIsDefined<T>(name: string, val: T): asserts val is NonNullable<T>
 }
 
 interface MusicNode {
-  start?: string | null
-  end?: string | null
+  start?: string | null;
+  end?: string | null;
   video?: {
-    videoId?: string | null
-    videoTitle?: string | null
-    date?: any | null
-  } | null
+    videoId?: string | null;
+    videoTitle?: string | null;
+    date?: any | null;
+  } | null;
   meta?: {
     ja?: {
-      artist?: string | null
-      title?: string | null
-    } | null
-  } | null
+      artist?: string | null;
+      title?: string | null;
+    } | null;
+  } | null;
 }
 
 export class Music {
-  id: number
+  id: number;
 
   videoId: string;
   videoTitle: string;
   date: Dayjs;
 
-  start: number | undefined
-  end: number | undefined
+  start: number | undefined;
+  end: number | undefined;
 
-  artist: string
-  title: string
+  artist: string;
+  title: string;
 
   constructor(id: number, node: MusicNode) {
     assertIsDefined('video', node.video);
@@ -55,8 +58,10 @@ export class Music {
     this.videoTitle = node.video.videoTitle;
     this.date = dayjs(node.video.date, 'YYYY-MM-DD');
 
-    this.start = (node.start != null) ? this.convertTimeToSeconds(node.start) : undefined;
-    this.end = (node.end != null) ? this.convertTimeToSeconds(node.end) : undefined;
+    this.start =
+      node.start != null ? this.convertTimeToSeconds(node.start) : undefined;
+    this.end =
+      node.end != null ? this.convertTimeToSeconds(node.end) : undefined;
 
     this.artist = node.meta.ja.artist;
     this.title = node.meta.ja.title;
@@ -67,7 +72,9 @@ export class Music {
     return `https://www.youtube.com/watch?v=${this.videoId}${t}`;
   }
 
-  static getSorter = (sortItem: SortItem): ((a: Music, b: Music) => number) | undefined => {
+  static getSorter = (
+    sortItem: SortItem
+  ): ((a: Music, b: Music) => number) | undefined => {
     switch (sortItem) {
       case 'title':
         return (a, b) => {
@@ -84,7 +91,7 @@ export class Music {
         return (a, b) => {
           const dateDiff = a.date.diff(b.date);
           if (dateDiff === 0) {
-            if ((a.start != null) && (b.start != null)) {
+            if (a.start != null && b.start != null) {
               return a.start - b.start;
             }
           }
@@ -93,11 +100,14 @@ export class Music {
       default:
         return undefined;
     }
-  }
+  };
 
   convertTimeToSeconds = (time: string): number => {
-    return time.split(':').reverse().reduce((sum, item, index) => {
-      return sum + (parseInt(item) * (60 ** index));
-    }, 0);
-  }
+    return time
+      .split(':')
+      .reverse()
+      .reduce((sum, item, index) => {
+        return sum + parseInt(item) * 60 ** index;
+      }, 0);
+  };
 }

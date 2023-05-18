@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { graphql, PageProps } from 'gatsby'
-import { SongsQuery } from '../../graphql-types'
+import { graphql, PageProps } from 'gatsby';
+import { SongsQuery } from '../../graphql-types';
 
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
 
@@ -24,7 +24,7 @@ import useWindowDimensions from '../hooks/useWindowDimensions';
 import _ from 'lodash';
 import { NumberParam, useQueryParam } from 'use-query-params';
 
-import GitHubButton from 'react-github-btn'
+import GitHubButton from 'react-github-btn';
 import { Music } from '../models/music';
 import { TwitterShare } from '../components/twitter_share';
 import { SortItem } from '../models/sort_item';
@@ -39,24 +39,32 @@ const playerDefaultOpts: YouTubeProps['opts'] = {
     start: undefined,
     end: undefined
   }
-}
+};
 
-const playerHeight = function(width: number): number {
+const playerHeight = function (width: number): number {
   return Math.round(width * (9 / 16));
 };
 
-const sortSongs = (songs: Music[], sortItem: SortItem, sortOrderByAsc: boolean): void => {
+const sortSongs = (
+  songs: Music[],
+  sortItem: SortItem,
+  sortOrderByAsc: boolean
+): void => {
   songs.sort(Music.getSorter(sortItem));
   if (!sortOrderByAsc) {
     songs.reverse();
   }
-}
+};
 
-const createSongList = (musicNodes: SongsQuery['allMusic']['nodes'], sortItem: SortItem, sortOrderByAsc: boolean): Music[] => {
+const createSongList = (
+  musicNodes: SongsQuery['allMusic']['nodes'],
+  sortItem: SortItem,
+  sortOrderByAsc: boolean
+): Music[] => {
   const songs = musicNodes.map((node, index) => new Music(index, node));
   sortSongs(songs, sortItem, sortOrderByAsc);
   return songs;
-}
+};
 
 const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
   const currentSongRow = useRef<HTMLTableRowElement>(null);
@@ -75,20 +83,29 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
   const songs = createSongList(data.allMusic.nodes, sortItem, sortOrderByAsc);
 
   // Playlist
-  const [playlist, setPlaylist] = useState(songs.map((song) => {
-    return song.id;
-  }));
-  const initialPlaylistIndex = initialSongId != null ? songs.findIndex((song) => song.id === initialSongId) : undefined;
+  const [playlist, setPlaylist] = useState(
+    songs.map(song => {
+      return song.id;
+    })
+  );
+  const initialPlaylistIndex =
+    initialSongId != null
+      ? songs.findIndex(song => song.id === initialSongId)
+      : undefined;
   const [playlistIndex, setPlaylistIndex] = useState(initialPlaylistIndex ?? 0);
 
   const getSong = (playlistIndex: number): Music => {
     const songId = playlist[playlistIndex];
-    const song = songs.find((song) => song.id === songId);
+    const song = songs.find(song => song.id === songId);
     if (song === null || song === undefined) {
-      throw new RangeError(`PlaylistIndex must be between 0 and ${playlist.length - 1} but given ${playlistIndex}`);
+      throw new RangeError(
+        `PlaylistIndex must be between 0 and ${
+          playlist.length - 1
+        } but given ${playlistIndex}`
+      );
     }
     return song;
-  }
+  };
   const currentSong = getSong(playlistIndex);
 
   // Create player option
@@ -144,14 +161,14 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
       setPlaylistIndex(playListIndex);
       player?.cueVideoById(opts);
     }
-  }
+  };
 
   const playBySongId = (id: number): void => {
-    const playListIndex = playlist.findIndex((songId) => {
+    const playListIndex = playlist.findIndex(songId => {
       return songId === id;
     });
     play(playListIndex);
-  }
+  };
 
   const handleOnSetRepeatMode = (): void => {
     switch (repeatMode) {
@@ -179,13 +196,13 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
     } else {
       setSortOrderByAsc(true);
     }
-  }
+  };
 
   useEffect(() => {
     // Create Playlist for random play
-    const currentSongId = playlist[playlistIndex]
+    const currentSongId = playlist[playlistIndex];
     sortSongs(songs, sortItem, sortOrderByAsc);
-    const originalList = songs.map((song) => {
+    const originalList = songs.map(song => {
       return song.id;
     });
 
@@ -199,7 +216,7 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
     setPlaylist(newPlaylist);
 
     // Adjust playlist index
-    const adjustedIndex = newPlaylist.findIndex((id) => {
+    const adjustedIndex = newPlaylist.findIndex(id => {
       return id === currentSongId;
     });
     setPlaylistIndex(adjustedIndex);
@@ -208,13 +225,31 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
   const RepeatButton = (): JSX.Element => {
     switch (repeatMode) {
       case 'none':
-        return <RiRepeat2Line size='3em' className={style.controlIcon} onClick={handleOnSetRepeatMode}/>;
+        return (
+          <RiRepeat2Line
+            size="3em"
+            className={style.controlIcon}
+            onClick={handleOnSetRepeatMode}
+          />
+        );
       case 'all':
-        return <RiRepeat2Line size='3em' className={style.controlIconEnable} onClick={handleOnSetRepeatMode}/>;
+        return (
+          <RiRepeat2Line
+            size="3em"
+            className={style.controlIconEnable}
+            onClick={handleOnSetRepeatMode}
+          />
+        );
       case 'one':
-        return <RiRepeatOneLine size='3em' className={style.controlIconEnable} onClick={handleOnSetRepeatMode}/>;
+        return (
+          <RiRepeatOneLine
+            size="3em"
+            className={style.controlIconEnable}
+            onClick={handleOnSetRepeatMode}
+          />
+        );
     }
-  }
+  };
 
   useEffect(() => {
     const clientRect = currentSongRow.current?.getBoundingClientRect();
@@ -229,15 +264,14 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
     <Layout>
       <main className={style.main}>
         <header className={style.header}>
-          <h1>
-            山田ニトラ ジュークボックス
-          </h1>
+          <h1>山田ニトラ ジュークボックス</h1>
 
           <div className={style.githubStar}>
             <GitHubButton
               href="https://github.com/ashphy/yamada-nitora-jukebox"
               data-icon="octicon-star"
-              aria-label="Star ashphy/yamada-nitora-jukebox on GitHub">
+              aria-label="Star ashphy/yamada-nitora-jukebox on GitHub"
+            >
               Star
             </GitHubButton>
           </div>
@@ -247,15 +281,14 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
           <YouTube
             videoId={currentSong.videoId ?? ''}
             className={style.youTubePlayer}
-            onReady={(event) => {
-              setPlayer(event.target)
+            onReady={event => {
+              setPlayer(event.target);
 
               if (jukeboxStatus === 'play') {
                 event.target.playVideo();
               }
             }}
-            onPlay={() => {
-            }}
+            onPlay={() => {}}
             onEnd={() => {
               // Go next song
               if (repeatMode === 'one') {
@@ -264,11 +297,11 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
                 play(playlistIndex + 1);
               }
             }}
-            onError={(event) => {
+            onError={event => {
               console.log('YOUTUBE ERROR', event);
             }}
-            onStateChange={(event) => {
-              setPlayer(event.target)
+            onStateChange={event => {
+              setPlayer(event.target);
 
               switch (event.data) {
                 case YouTube.PlayerState.UNSTARTED:
@@ -294,33 +327,48 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
 
           <div className={style.playerSide}>
             <div className={style.musicInfo}>
-              <p className={style.musicTitle}>
-                {currentSong.title ?? '--'}
-              </p>
-              <p className={style.musicArtist}>
-                {currentSong.artist ?? '--'}
-              </p>
-              <TwitterShare song={currentSong}/>
+              <p className={style.musicTitle}>{currentSong.title ?? '--'}</p>
+              <p className={style.musicArtist}>{currentSong.artist ?? '--'}</p>
+              <TwitterShare song={currentSong} />
             </div>
             <div className={style.playerControls}>
-              <RepeatButton/>
-              <IoPlaySkipBack size='3em' className={style.controlIcon} onClick={() => {
-                play(playlistIndex - 1)
-              }}/>
-              {jukeboxStatus === 'play'
-                ? <IoPause size='5em' className={style.controlIcon} onClick={() => {
-                  player?.pauseVideo()
-                }}/>
-                : <IoPlayCircle size='5em' className={style.controlIcon} onClick={() => {
-                  player?.playVideo()
-                }}/>
-              }
-              <IoPlaySkipForward size='3em' className={style.controlIcon} onClick={() => {
-                play(playlistIndex + 1)
-              }}/>
+              <RepeatButton />
+              <IoPlaySkipBack
+                size="3em"
+                className={style.controlIcon}
+                onClick={() => {
+                  play(playlistIndex - 1);
+                }}
+              />
+              {jukeboxStatus === 'play' ? (
+                <IoPause
+                  size="5em"
+                  className={style.controlIcon}
+                  onClick={() => {
+                    player?.pauseVideo();
+                  }}
+                />
+              ) : (
+                <IoPlayCircle
+                  size="5em"
+                  className={style.controlIcon}
+                  onClick={() => {
+                    player?.playVideo();
+                  }}
+                />
+              )}
+              <IoPlaySkipForward
+                size="3em"
+                className={style.controlIcon}
+                onClick={() => {
+                  play(playlistIndex + 1);
+                }}
+              />
               <FaRandom
-                size='3em'
-                className={randomMode ? style.controlIconEnable : style.controlIcon}
+                size="3em"
+                className={
+                  randomMode ? style.controlIconEnable : style.controlIcon
+                }
                 onClick={handleOnSetRandomMode}
               />
             </div>
@@ -330,101 +378,135 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
         <div className={style.songList}>
           <table>
             <thead>
-            <tr>
-              <th className={style.songCursor}></th>
-              <th className={style.songTitle}
-                  onClick={() => handleOnSort('title')}>
-                Title
-                <span className={style.sortIcon}>
-                  {sortItem === 'title' && sortOrderByAsc && <TiArrowSortedUp size={16}/>}
-                  {sortItem === 'title' && !sortOrderByAsc && <TiArrowSortedDown size={16}/>}
+              <tr>
+                <th className={style.songCursor}></th>
+                <th
+                  className={style.songTitle}
+                  onClick={() => handleOnSort('title')}
+                >
+                  Title
+                  <span className={style.sortIcon}>
+                    {sortItem === 'title' && sortOrderByAsc && (
+                      <TiArrowSortedUp size={16} />
+                    )}
+                    {sortItem === 'title' && !sortOrderByAsc && (
+                      <TiArrowSortedDown size={16} />
+                    )}
                   </span>
-              </th>
-              <th className={style.songArtist}
-                  onClick={() => handleOnSort('artist')}>
-                Artist
-                <span className={style.sortIcon}>
-                  {sortItem === 'artist' && sortOrderByAsc && <TiArrowSortedUp size={16}/>}
-                  {sortItem === 'artist' && !sortOrderByAsc && <TiArrowSortedDown size={16}/>}
-                </span>
-              </th>
-              <th className={style.songSource}
-                  onClick={() => handleOnSort('source')}>
-                Source
-                <span className={style.sortIcon}>
-                  {sortItem === 'source' && sortOrderByAsc && <TiArrowSortedUp size={16}/>}
-                  {sortItem === 'source' && !sortOrderByAsc && <TiArrowSortedDown size={16}/>}
-                </span>
-              </th>
-              <th className={style.songAction}>
-                <FaYoutube />
-              </th>
-            </tr>
+                </th>
+                <th
+                  className={style.songArtist}
+                  onClick={() => handleOnSort('artist')}
+                >
+                  Artist
+                  <span className={style.sortIcon}>
+                    {sortItem === 'artist' && sortOrderByAsc && (
+                      <TiArrowSortedUp size={16} />
+                    )}
+                    {sortItem === 'artist' && !sortOrderByAsc && (
+                      <TiArrowSortedDown size={16} />
+                    )}
+                  </span>
+                </th>
+                <th
+                  className={style.songSource}
+                  onClick={() => handleOnSort('source')}
+                >
+                  Source
+                  <span className={style.sortIcon}>
+                    {sortItem === 'source' && sortOrderByAsc && (
+                      <TiArrowSortedUp size={16} />
+                    )}
+                    {sortItem === 'source' && !sortOrderByAsc && (
+                      <TiArrowSortedDown size={16} />
+                    )}
+                  </span>
+                </th>
+                <th className={style.songAction}>
+                  <FaYoutube />
+                </th>
+              </tr>
             </thead>
             <tbody>
-            {
-              songs.map((song) => {
+              {songs.map(song => {
                 const isCurrentPlaying = playlist[playlistIndex] === song.id;
 
-                return <tr
-                  key={song.id}
-                  ref={isCurrentPlaying ? currentSongRow : null}
-                  style={isCurrentPlaying ? { backgroundColor: '#FFF1F3' } : {}}>
-                  <td className={style.songCursor}>
-                    {isCurrentPlaying && <BsPlayFill/>}
-                  </td>
-                  <td className={style.songTitle} onClick={() => {
-                    playBySongId(song.id)
-                  }}>
-                    {song.title ?? '--'}
-                  </td>
-                  <td className={style.songArtist} onClick={() => {
-                    playBySongId(song.id)
-                  }}>
-                    {song.artist ?? '--'}
-                  </td>
-                  <td className={style.songSource} title={song.videoTitle} onClick={() => {
-                    playBySongId(song.id)
-                  }}>
-                    {song.videoTitle}
-                  </td>
-                  <td className={style.songAction}>
-                    <a target="_blank"
-                       href={song.youtubeUrl} rel="noreferrer">
-                      <FiExternalLink/>
-                    </a>
-                  </td>
-                </tr>
-              })
-            }
+                return (
+                  <tr
+                    key={song.id}
+                    ref={isCurrentPlaying ? currentSongRow : null}
+                    style={
+                      isCurrentPlaying ? { backgroundColor: '#FFF1F3' } : {}
+                    }
+                  >
+                    <td className={style.songCursor}>
+                      {isCurrentPlaying && <BsPlayFill />}
+                    </td>
+                    <td
+                      className={style.songTitle}
+                      onClick={() => {
+                        playBySongId(song.id);
+                      }}
+                    >
+                      {song.title ?? '--'}
+                    </td>
+                    <td
+                      className={style.songArtist}
+                      onClick={() => {
+                        playBySongId(song.id);
+                      }}
+                    >
+                      {song.artist ?? '--'}
+                    </td>
+                    <td
+                      className={style.songSource}
+                      title={song.videoTitle}
+                      onClick={() => {
+                        playBySongId(song.id);
+                      }}
+                    >
+                      {song.videoTitle}
+                    </td>
+                    <td className={style.songAction}>
+                      <a
+                        target="_blank"
+                        href={song.youtubeUrl}
+                        rel="noreferrer"
+                      >
+                        <FiExternalLink />
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </main>
     </Layout>
-  )
-}
+  );
+};
 
 export const query = graphql`
-    query Songs {
-        allMusic {
-            nodes {
-                video {
-                    videoId
-                    videoTitle
-                    date
-                }
-                start
-                end
-                meta {
-                    ja {
-                        artist
-                        title
-                    }
-                }
-            }
+  query Songs {
+    allMusic {
+      nodes {
+        video {
+          videoId
+          videoTitle
+          date
         }
+        start
+        end
+        meta {
+          ja {
+            artist
+            title
+          }
+        }
+      }
     }
-`
+  }
+`;
 
-export default IndexPage
+export default IndexPage;
