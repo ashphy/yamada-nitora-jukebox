@@ -1,4 +1,4 @@
-import type { GatsbyConfig } from 'gatsby'
+import type { GatsbyConfig } from 'gatsby';
 import path from 'path';
 
 const config: GatsbyConfig = {
@@ -12,6 +12,7 @@ const config: GatsbyConfig = {
   // If you use VSCode you can also use the GraphQL plugin
   // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
+  trailingSlash: `always`,
   plugins: [
     {
       resolve: 'gatsby-source-filesystem',
@@ -34,7 +35,6 @@ const config: GatsbyConfig = {
         path: path.join(__dirname, 'src/data')
       }
     },
-    'gatsby-plugin-use-query-params',
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
@@ -47,8 +47,6 @@ const config: GatsbyConfig = {
         icon: 'src/images/icon.png'
       }
     },
-    'gatsby-plugin-offline',
-    'gatsby-plugin-react-helmet',
     {
       resolve: 'gatsby-plugin-s3',
       options: {
@@ -57,6 +55,6 @@ const config: GatsbyConfig = {
     },
     'gatsby-plugin-dts-css-modules'
   ]
-}
+};
 
-export default config
+export default config;

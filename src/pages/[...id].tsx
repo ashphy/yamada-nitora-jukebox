@@ -22,7 +22,6 @@ import * as style from '../pages/index.module.css';
 import { Layout } from '../components/layout';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 import _ from 'lodash';
-import { NumberParam, useQueryParam } from 'use-query-params';
 
 import GitHubButton from 'react-github-btn';
 import { Music } from '../models/music';
@@ -66,10 +65,11 @@ const createSongList = (
   return songs;
 };
 
-const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data }) => {
+const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
   const currentSongRow = useRef<HTMLTableRowElement>(null);
 
-  const [initialSongId] = useQueryParam('i', NumberParam);
+  const idParam = parseInt(params.id, 10);
+  const initialSongId = isNaN(idParam) ? null : idParam;
 
   const [jukeboxStatus, setJukeboxStatus] = useState<JukeBoxStatus>('stop');
   const [randomMode, setRandomMode] = useState<boolean>(false);
@@ -510,3 +510,5 @@ export const query = graphql`
 `;
 
 export default IndexPage;
+
+export { Head } from '../components/head';
