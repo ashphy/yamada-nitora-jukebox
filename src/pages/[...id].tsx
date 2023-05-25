@@ -300,8 +300,8 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
               />
               <PlayButton
                 jukeboxStatus={jukeboxStatus}
-                onPlay={player?.playVideo()}
-                onPause={player?.pauseVideo()}
+                onPlay={() => player?.playVideo()}
+                onPause={() => player?.pauseVideo()}
               />
               <IoPlaySkipForward
                 size="3em"
