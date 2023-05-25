@@ -5,8 +5,6 @@ import { SongsQuery } from '../../graphql-types';
 
 import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
 
-import { IoPlayCircle } from '@react-icons/all-files/io5/IoPlayCircle';
-import { IoPause } from '@react-icons/all-files/io5/IoPause';
 import { IoPlaySkipBack } from '@react-icons/all-files/io5/IoPlaySkipBack';
 import { IoPlaySkipForward } from '@react-icons/all-files/io5/IoPlaySkipForward';
 import { RiRepeatOneLine } from '@react-icons/all-files/ri/RiRepeatOneLine';
@@ -29,6 +27,7 @@ import { TwitterShare } from '../components/twitter_share';
 import { SortItem } from '../models/sort_item';
 import { JukeBoxStatus } from '../enums/jukeboxStatus';
 import { RepeatMode } from '../enums/repeatMode';
+import { PlayButton } from '../components/player/playButton';
 
 const playerDefaultOpts: YouTubeProps['opts'] = {
   width: 480,
@@ -340,23 +339,11 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
                   play(playlistIndex - 1);
                 }}
               />
-              {jukeboxStatus === 'play' ? (
-                <IoPause
-                  size="5em"
-                  className={style.controlIcon}
-                  onClick={() => {
-                    player?.pauseVideo();
-                  }}
-                />
-              ) : (
-                <IoPlayCircle
-                  size="5em"
-                  className={style.controlIcon}
-                  onClick={() => {
-                    player?.playVideo();
-                  }}
-                />
-              )}
+              <PlayButton
+                jukeboxStatus={jukeboxStatus}
+                onPlay={player?.playVideo()}
+                onPause={player?.pauseVideo()}
+              />
               <IoPlaySkipForward
                 size="3em"
                 className={style.controlIcon}
