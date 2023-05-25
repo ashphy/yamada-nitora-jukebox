@@ -7,8 +7,6 @@ import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
 
 import { IoPlaySkipBack } from '@react-icons/all-files/io5/IoPlaySkipBack';
 import { IoPlaySkipForward } from '@react-icons/all-files/io5/IoPlaySkipForward';
-import { RiRepeatOneLine } from '@react-icons/all-files/ri/RiRepeatOneLine';
-import { RiRepeat2Line } from '@react-icons/all-files/ri/RiRepeat2Line';
 import { FiExternalLink } from '@react-icons/all-files/fi/FiExternalLink';
 import { FaRandom } from '@react-icons/all-files/fa/FaRandom';
 import { BsPlayFill } from '@react-icons/all-files/bs/BsPlayFill';
@@ -28,6 +26,7 @@ import { SortItem } from '../models/sort_item';
 import { JukeBoxStatus } from '../enums/jukeboxStatus';
 import { RepeatMode } from '../enums/repeatMode';
 import { PlayButton } from '../components/player/playButton';
+import { RepeatButton } from '../components/player/repeatButton';
 
 const playerDefaultOpts: YouTubeProps['opts'] = {
   width: 480,
@@ -169,20 +168,6 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
     play(playListIndex);
   };
 
-  const handleOnSetRepeatMode = (): void => {
-    switch (repeatMode) {
-      case 'none':
-        setRepeatMode('all');
-        break;
-      case 'all':
-        setRepeatMode('one');
-        break;
-      case 'one':
-        setRepeatMode('none');
-        break;
-    }
-  };
-
   const handleOnSetRandomMode = (): void => {
     setRandomMode(!randomMode);
   };
@@ -220,35 +205,6 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
     });
     setPlaylistIndex(adjustedIndex);
   }, [randomMode, sortItem, sortOrderByAsc]);
-
-  const RepeatButton = (): JSX.Element => {
-    switch (repeatMode) {
-      case 'none':
-        return (
-          <RiRepeat2Line
-            size="3em"
-            className={style.controlIcon}
-            onClick={handleOnSetRepeatMode}
-          />
-        );
-      case 'all':
-        return (
-          <RiRepeat2Line
-            size="3em"
-            className={style.controlIconEnable}
-            onClick={handleOnSetRepeatMode}
-          />
-        );
-      case 'one':
-        return (
-          <RiRepeatOneLine
-            size="3em"
-            className={style.controlIconEnable}
-            onClick={handleOnSetRepeatMode}
-          />
-        );
-    }
-  };
 
   useEffect(() => {
     const clientRect = currentSongRow.current?.getBoundingClientRect();
@@ -331,7 +287,10 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
               <TwitterShare song={currentSong} />
             </div>
             <div className={style.playerControls}>
-              <RepeatButton />
+              <RepeatButton
+                repeatMode={repeatMode}
+                onChangeRepeatMode={mode => setRepeatMode(mode)}
+              />
               <IoPlaySkipBack
                 size="3em"
                 className={style.controlIcon}
