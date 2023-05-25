@@ -1,18 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { graphql, PageProps } from 'gatsby';
 import { SongsQuery } from '../../graphql-types';
 
-import YouTube, { YouTubePlayer, YouTubeProps } from 'react-youtube';
-
-import { IoPlaySkipBack } from '@react-icons/all-files/io5/IoPlaySkipBack';
-import { IoPlaySkipForward } from '@react-icons/all-files/io5/IoPlaySkipForward';
-import { FiExternalLink } from '@react-icons/all-files/fi/FiExternalLink';
-import { FaRandom } from '@react-icons/all-files/fa/FaRandom';
-import { BsPlayFill } from '@react-icons/all-files/bs/BsPlayFill';
-import { TiArrowSortedUp } from '@react-icons/all-files/ti/TiArrowSortedUp';
-import { TiArrowSortedDown } from '@react-icons/all-files/ti/TiArrowSortedDown';
-import { FaYoutube } from '@react-icons/all-files/fa/FaYoutube';
+import { YouTubePlayer, YouTubeProps } from 'react-youtube';
 
 import * as style from '../pages/index.module.css';
 import { Layout } from '../components/layout';
@@ -21,12 +12,11 @@ import _ from 'lodash';
 
 import GitHubButton from 'react-github-btn';
 import { Music } from '../models/music';
-import { TwitterShare } from '../components/twitter_share';
 import { SortItem } from '../models/sort_item';
 import { JukeBoxStatus } from '../enums/jukeboxStatus';
 import { RepeatMode } from '../enums/repeatMode';
-import { PlayButton } from '../components/player/playButton';
-import { RepeatButton } from '../components/player/repeatButton';
+import { SongList } from '../components/songList';
+import { Player } from '../components/player';
 
 const playerDefaultOpts: YouTubeProps['opts'] = {
   width: 480,
@@ -64,8 +54,6 @@ const createSongList = (
 };
 
 const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
-  const currentSongRow = useRef<HTMLTableRowElement>(null);
-
   const idParam = parseInt(params.id, 10);
   const initialSongId = isNaN(idParam) ? null : idParam;
 
@@ -168,10 +156,6 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
     play(playListIndex);
   };
 
-  const handleOnSetRandomMode = (): void => {
-    setRandomMode(!randomMode);
-  };
-
   const handleOnSort = (newSortItem: SortItem): void => {
     setSortItem(newSortItem);
 
@@ -206,15 +190,6 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
     setPlaylistIndex(adjustedIndex);
   }, [randomMode, sortItem, sortOrderByAsc]);
 
-  useEffect(() => {
-    const clientRect = currentSongRow.current?.getBoundingClientRect();
-    if (clientRect !== null && clientRect !== undefined) {
-      // const px = window.scrollX + clientRect.left;
-      // const py = window.scrollY + clientRect.top;
-      // console.log(`scroll px: ${px}, py: ${py}`);
-    }
-  }, [playlistIndex, playlist]);
-
   return (
     <Layout>
       <main className={style.main}>
@@ -232,202 +207,30 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
           </div>
         </header>
 
-        <div className={style.player}>
-          <YouTube
-            videoId={currentSong.videoId ?? ''}
-            className={style.youTubePlayer}
-            onReady={event => {
-              setPlayer(event.target);
+        <Player
+          currentSong={currentSong}
+          jukeboxStatus={jukeboxStatus}
+          onChangePlayerState={state => setJukeboxStatus(state)}
+          repeatMode={repeatMode}
+          onChangeRepeatMode={mode => setRepeatMode(mode)}
+          randomMode={randomMode}
+          playlistIndex={playlistIndex}
+          onPlay={play}
+          opts={opts}
+          setRandomMode={setRandomMode}
+          player={player}
+          onChangePlayer={player => setPlayer(player)}
+        />
 
-              if (jukeboxStatus === 'play') {
-                event.target.playVideo();
-              }
-            }}
-            onPlay={() => {}}
-            onEnd={() => {
-              // Go next song
-              if (repeatMode === 'one') {
-                play(playlistIndex);
-              } else {
-                play(playlistIndex + 1);
-              }
-            }}
-            onError={event => {
-              console.log('YOUTUBE ERROR', event);
-            }}
-            onStateChange={event => {
-              setPlayer(event.target);
-
-              switch (event.data) {
-                case YouTube.PlayerState.UNSTARTED:
-                  break;
-                case YouTube.PlayerState.ENDED:
-                  setJukeboxStatus('stop');
-                  break;
-                case YouTube.PlayerState.PLAYING:
-                  setJukeboxStatus('play');
-                  break;
-                case YouTube.PlayerState.PAUSED:
-                  setJukeboxStatus('stop');
-                  break;
-                case YouTube.PlayerState.BUFFERING:
-                  break;
-                case YouTube.PlayerState.CUED:
-                  event.target.playVideo();
-                  break;
-              }
-            }}
-            opts={opts}
-          />
-
-          <div className={style.playerSide}>
-            <div className={style.musicInfo}>
-              <p className={style.musicTitle}>{currentSong.title ?? '--'}</p>
-              <p className={style.musicArtist}>{currentSong.artist ?? '--'}</p>
-              <TwitterShare song={currentSong} />
-            </div>
-            <div className={style.playerControls}>
-              <RepeatButton
-                repeatMode={repeatMode}
-                onChangeRepeatMode={mode => setRepeatMode(mode)}
-              />
-              <IoPlaySkipBack
-                size="3em"
-                className={style.controlIcon}
-                onClick={() => {
-                  play(playlistIndex - 1);
-                }}
-              />
-              <PlayButton
-                jukeboxStatus={jukeboxStatus}
-                onPlay={() => player?.playVideo()}
-                onPause={() => player?.pauseVideo()}
-              />
-              <IoPlaySkipForward
-                size="3em"
-                className={style.controlIcon}
-                onClick={() => {
-                  play(playlistIndex + 1);
-                }}
-              />
-              <FaRandom
-                size="3em"
-                className={
-                  randomMode ? style.controlIconEnable : style.controlIcon
-                }
-                onClick={handleOnSetRandomMode}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className={style.songList}>
-          <table>
-            <thead>
-              <tr>
-                <th className={style.songCursor}></th>
-                <th
-                  className={style.songTitle}
-                  onClick={() => handleOnSort('title')}
-                >
-                  Title
-                  <span className={style.sortIcon}>
-                    {sortItem === 'title' && sortOrderByAsc && (
-                      <TiArrowSortedUp size={16} />
-                    )}
-                    {sortItem === 'title' && !sortOrderByAsc && (
-                      <TiArrowSortedDown size={16} />
-                    )}
-                  </span>
-                </th>
-                <th
-                  className={style.songArtist}
-                  onClick={() => handleOnSort('artist')}
-                >
-                  Artist
-                  <span className={style.sortIcon}>
-                    {sortItem === 'artist' && sortOrderByAsc && (
-                      <TiArrowSortedUp size={16} />
-                    )}
-                    {sortItem === 'artist' && !sortOrderByAsc && (
-                      <TiArrowSortedDown size={16} />
-                    )}
-                  </span>
-                </th>
-                <th
-                  className={style.songSource}
-                  onClick={() => handleOnSort('source')}
-                >
-                  Source
-                  <span className={style.sortIcon}>
-                    {sortItem === 'source' && sortOrderByAsc && (
-                      <TiArrowSortedUp size={16} />
-                    )}
-                    {sortItem === 'source' && !sortOrderByAsc && (
-                      <TiArrowSortedDown size={16} />
-                    )}
-                  </span>
-                </th>
-                <th className={style.songAction}>
-                  <FaYoutube />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {songs.map(song => {
-                const isCurrentPlaying = playlist[playlistIndex] === song.id;
-
-                return (
-                  <tr
-                    key={song.id}
-                    ref={isCurrentPlaying ? currentSongRow : null}
-                    style={
-                      isCurrentPlaying ? { backgroundColor: '#FFF1F3' } : {}
-                    }
-                  >
-                    <td className={style.songCursor}>
-                      {isCurrentPlaying && <BsPlayFill />}
-                    </td>
-                    <td
-                      className={style.songTitle}
-                      onClick={() => {
-                        playBySongId(song.id);
-                      }}
-                    >
-                      {song.title ?? '--'}
-                    </td>
-                    <td
-                      className={style.songArtist}
-                      onClick={() => {
-                        playBySongId(song.id);
-                      }}
-                    >
-                      {song.artist ?? '--'}
-                    </td>
-                    <td
-                      className={style.songSource}
-                      title={song.videoTitle}
-                      onClick={() => {
-                        playBySongId(song.id);
-                      }}
-                    >
-                      {song.videoTitle}
-                    </td>
-                    <td className={style.songAction}>
-                      <a
-                        target="_blank"
-                        href={song.youtubeUrl}
-                        rel="noreferrer"
-                      >
-                        <FiExternalLink />
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <SongList
+          songs={songs}
+          playlist={playlist}
+          playlistIndex={playlistIndex}
+          sortItem={sortItem}
+          sortOrderByAsc={sortOrderByAsc}
+          handleOnSort={handleOnSort}
+          playBySongId={playBySongId}
+        />
       </main>
     </Layout>
   );

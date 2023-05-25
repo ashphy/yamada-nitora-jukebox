@@ -24,14 +24,6 @@ module.exports = {
     semi: 'off',
     '@typescript-eslint/semi': 'off',
     '@typescript-eslint/space-before-function-paren': 'off',
-    '@typescript-eslint/comma-dangle': [
-      'error',
-      {
-        enums: 'always-multiline',
-        generics: 'never',
-        tuples: 'always-multiline'
-      }
-    ],
     '@typescript-eslint/restrict-template-expressions': [
       'error',
       { allowAny: true }
