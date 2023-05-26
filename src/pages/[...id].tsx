@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { graphql, PageProps } from 'gatsby';
 import { SongsQuery } from '../../graphql-types';
 
-import { YouTubePlayer, YouTubeProps } from 'react-youtube';
+import { YouTubeProps } from 'react-youtube';
 
 import * as style from '../pages/index.module.css';
 import { Layout } from '../components/layout';
@@ -11,12 +11,10 @@ import useWindowDimensions from '../hooks/useWindowDimensions';
 import _ from 'lodash';
 
 import GitHubButton from 'react-github-btn';
-import { Music } from '../models/music';
 import { SortItem } from '../models/sort_item';
-import { JukeBoxStatus } from '../enums/jukeboxStatus';
-import { RepeatMode } from '../enums/repeatMode';
 import { SongList } from '../components/songList';
 import { Player } from '../components/player';
+import { usePlayerList } from '../hooks/usePlayList';
 
 const playerDefaultOpts: YouTubeProps['opts'] = {
   width: 480,
@@ -32,66 +30,31 @@ const playerHeight = function (width: number): number {
   return Math.round(width * (9 / 16));
 };
 
-const sortSongs = (
-  songs: Music[],
-  sortItem: SortItem,
-  sortOrderByAsc: boolean
-): void => {
-  songs.sort(Music.getSorter(sortItem));
-  if (!sortOrderByAsc) {
-    songs.reverse();
-  }
-};
-
-const createSongList = (
-  musicNodes: SongsQuery['allMusic']['nodes'],
-  sortItem: SortItem,
-  sortOrderByAsc: boolean
-): Music[] => {
-  const songs = musicNodes.map((node, index) => new Music(index, node));
-  sortSongs(songs, sortItem, sortOrderByAsc);
-  return songs;
-};
-
 const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
   const idParam = parseInt(params.id, 10);
-  const initialSongId = isNaN(idParam) ? null : idParam;
-
-  const [jukeboxStatus, setJukeboxStatus] = useState<JukeBoxStatus>('stop');
-  const [randomMode, setRandomMode] = useState<boolean>(false);
-  const [repeatMode, setRepeatMode] = useState<RepeatMode>('none');
-
-  const [player, setPlayer] = useState<YouTubePlayer>();
-
-  // Song list options
-  const [sortItem, setSortItem] = useState<SortItem>('source');
-  const [sortOrderByAsc, setSortOrderByAsc] = useState<boolean>(true);
-  const songs = createSongList(data.allMusic.nodes, sortItem, sortOrderByAsc);
+  const initialSongId = isNaN(idParam) ? undefined : idParam;
 
   // Playlist
-  const [playlist, setPlaylist] = useState(
-    songs.map(song => {
-      return song.id;
-    })
-  );
-  const initialPlaylistIndex =
-    initialSongId != null
-      ? songs.findIndex(song => song.id === initialSongId)
-      : undefined;
-  const [playlistIndex, setPlaylistIndex] = useState(initialPlaylistIndex ?? 0);
+  const [
+    jukeboxStatus,
+    setJukeboxStatus,
+    randomMode,
+    setRandomMode,
+    repeatMode,
+    setRepeatMode,
+    songs,
+    playlistIndex,
+    setPlaylistIndex,
+    sortItem,
+    setSortItem,
+    sortOrderByAsc,
+    setSortOrderByAsc,
+    player,
+    setPlayer,
+    playlist,
+    getSong
+  ] = usePlayerList(data.allMusic.nodes, initialSongId);
 
-  const getSong = (playlistIndex: number): Music => {
-    const songId = playlist[playlistIndex];
-    const song = songs.find(song => song.id === songId);
-    if (song === null || song === undefined) {
-      throw new RangeError(
-        `PlaylistIndex must be between 0 and ${
-          playlist.length - 1
-        } but given ${playlistIndex}`
-      );
-    }
-    return song;
-  };
   const currentSong = getSong(playlistIndex);
 
   // Create player option
@@ -165,30 +128,6 @@ const IndexPage: React.FC<PageProps<SongsQuery>> = ({ data, params }) => {
       setSortOrderByAsc(true);
     }
   };
-
-  useEffect(() => {
-    // Create Playlist for random play
-    const currentSongId = playlist[playlistIndex];
-    sortSongs(songs, sortItem, sortOrderByAsc);
-    const originalList = songs.map(song => {
-      return song.id;
-    });
-
-    let newPlaylist: number[];
-    if (randomMode) {
-      // Create random playlist
-      newPlaylist = _.shuffle(originalList);
-    } else {
-      newPlaylist = originalList;
-    }
-    setPlaylist(newPlaylist);
-
-    // Adjust playlist index
-    const adjustedIndex = newPlaylist.findIndex(id => {
-      return id === currentSongId;
-    });
-    setPlaylistIndex(adjustedIndex);
-  }, [randomMode, sortItem, sortOrderByAsc]);
 
   return (
     <Layout>
