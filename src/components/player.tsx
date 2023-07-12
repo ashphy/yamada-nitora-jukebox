@@ -130,7 +130,7 @@ export const Player = ({
         onError={event => {
           console.log('YOUTUBE ERROR', event);
         }}
-        onStateChange={event => void handleOnStateChange(event)}
+        onStateChange={event => handleOnStateChange(event)}
       />
 
       <div className={style.playerSide}>
