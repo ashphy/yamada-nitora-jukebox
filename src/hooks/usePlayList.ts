@@ -1,77 +1,58 @@
-import { Music } from '../models/music';
-import { SongsQuery } from '../../graphql-types';
-import { SortItem } from '../models/sort_item';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { YouTubePlayer } from 'react-youtube';
-import { JukeBoxStatus } from '../enums/jukeboxStatus';
-import { RepeatMode } from '../enums/repeatMode';
 import _ from 'lodash';
+import { Dispatch, useEffect, useState } from 'react';
+import { YouTubeProps } from 'react-youtube';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-const sortSongs = (
-  songs: Music[],
-  sortItem: SortItem,
-  sortOrderByAsc: boolean
-): void => {
-  songs.sort(Music.getSorter(sortItem));
-  if (!sortOrderByAsc) {
-    songs.reverse();
+import { JukeBoxStatus } from '../enums/jukeboxStatus';
+import useWindowDimensions from '../hooks/useWindowDimensions';
+import { Music } from '../models/music';
+import { currentSongState } from '../recoil/currentSongState';
+import { initialSongIdState } from '../recoil/initialSongIdState';
+import { playlistIndexState } from '../recoil/playlistIndex';
+import { playlistState } from '../recoil/playlistState';
+import { repeatModeState } from '../recoil/repeatModeState';
+import { sortedSongListState } from '../recoil/sortedSongList';
+import {
+  isPlaySongChangingState,
+  youTubePlayerState
+} from '../recoil/youTubePlayerState';
+
+const playerDefaultOpts: YouTubeProps['opts'] = {
+  width: 480,
+  height: 270,
+  playerVars: {
+    origin: 'https://jukebox.ashphy.com/',
+    start: undefined,
+    end: undefined,
+    autoplay: 0
   }
 };
 
-const createSongList = (
-  musicNodes: SongsQuery['allMusic']['nodes'],
-  sortItem: SortItem,
-  sortOrderByAsc: boolean
-): Music[] => {
-  const songs = musicNodes.map((node, index) => new Music(index, node));
-  sortSongs(songs, sortItem, sortOrderByAsc);
-  return songs;
+const playerHeight = function (width: number): number {
+  return Math.round(width * (9 / 16));
 };
 
-export const usePlayerList = (
-  musicNode: SongsQuery['allMusic']['nodes'],
-  initialSongId: number | undefined
-): [
+export const usePlayerList = (): [
   JukeBoxStatus,
   Dispatch<JukeBoxStatus>,
-  boolean,
-  Dispatch<boolean>,
-  RepeatMode,
-  Dispatch<RepeatMode>,
   Music[],
   number,
-  Dispatch<number>,
-  SortItem,
-  Dispatch<SortItem>,
-  boolean,
-  Dispatch<boolean>,
-  YouTubePlayer,
-  Dispatch<SetStateAction<YouTubePlayer>>,
   number[],
-  (playlistIndex: number) => Music
+  Music | undefined,
+  (playListIndex: number) => void,
+  (id: number) => void,
+  YouTubeProps['opts']
 ] => {
   const [jukeboxStatus, setJukeboxStatus] = useState<JukeBoxStatus>('stop');
-  const [randomMode, setRandomMode] = useState<boolean>(false);
-  const [repeatMode, setRepeatMode] = useState<RepeatMode>('none');
 
-  const [sortItem, setSortItem] = useState<SortItem>('source');
-  const [sortOrderByAsc, setSortOrderByAsc] = useState<boolean>(true);
-
-  const songs = createSongList(musicNode, sortItem, sortOrderByAsc);
-
-  const initialPlaylistIndex =
-    initialSongId != null
-      ? songs.findIndex(song => song.id === initialSongId)
-      : undefined;
-
-  const [playlistIndex, setPlaylistIndex] = useState(initialPlaylistIndex ?? 0);
-  const [player, setPlayer] = useState<YouTubePlayer>();
-
-  const [playlist, setPlaylist] = useState(
-    songs.map(song => {
-      return song.id;
-    })
-  );
+  const repeatMode = useRecoilValue(repeatModeState);
+  const songs = useRecoilValue(sortedSongListState);
+  const [currentSong, setCurrentSong] = useRecoilState(currentSongState);
+  const playlistIndex = useRecoilValue(playlistIndexState);
+  const player = useRecoilValue(youTubePlayerState);
+  const playlist = useRecoilValue(playlistState);
+  const initialSongId = useRecoilValue(initialSongIdState);
+  const setIsPlaySongChanging = useSetRecoilState(isPlaySongChangingState);
 
   const getSong = (playlistIndex: number): Music => {
     const songId = playlist[playlistIndex];
@@ -86,47 +67,93 @@ export const usePlayerList = (
     return song;
   };
 
-  useEffect(() => {
-    // Create Playlist for random play
-    const currentSongId = playlist[playlistIndex];
-    sortSongs(songs, sortItem, sortOrderByAsc);
-    const originalList = songs.map(song => {
-      return song.id;
-    });
+  // Create player option
+  const opts = _.cloneDeep(playerDefaultOpts);
+  if (currentSong?.start != null) {
+    opts.playerVars.start = currentSong.start;
+  }
+  if (currentSong?.end != null) {
+    opts.playerVars.end = currentSong.end;
+  }
 
-    let newPlaylist: number[];
-    if (randomMode) {
-      // Create random playlist
-      newPlaylist = _.shuffle(originalList);
-    } else {
-      newPlaylist = originalList;
+  const { width } = useWindowDimensions();
+  if (width < 960) {
+    opts.width = width;
+    opts.height = playerHeight(width);
+  }
+
+  // Play song with index
+  const play = (playListIndex: number): void => {
+    setIsPlaySongChanging(true);
+
+    if (playListIndex < 0) {
+      setJukeboxStatus('stop');
+      return;
     }
-    setPlaylist(newPlaylist);
 
-    // Adjust playlist index
-    const adjustedIndex = newPlaylist.findIndex(id => {
-      return id === currentSongId;
+    if (playlist.length <= playListIndex) {
+      if (repeatMode === 'all') {
+        // Seek back to first.
+        playListIndex = 0;
+      } else {
+        // Stop the player
+        setJukeboxStatus('stop');
+        return;
+      }
+    }
+
+    const nextSong = getSong(playListIndex);
+
+    if (currentSong?.videoId === nextSong.videoId) {
+      const opts: any = {
+        videoId: nextSong.videoId
+      };
+      if (nextSong.start != null) {
+        opts.startSeconds = nextSong.start;
+      }
+      if (nextSong.end != null) {
+        opts.endSeconds = nextSong.end;
+      }
+
+      setJukeboxStatus('play');
+      setCurrentSong(nextSong);
+      player?.cueVideoById(opts);
+      // player?.loadVideoById(opts);
+    } else {
+      setJukeboxStatus('play');
+      setCurrentSong(nextSong);
+      player?.cueVideoById(opts);
+    }
+  };
+
+  const playBySongId = (id: number): void => {
+    const playListIndex = playlist.findIndex(songId => {
+      return songId === id;
     });
-    setPlaylistIndex(adjustedIndex);
-  }, [randomMode, sortItem, sortOrderByAsc]);
+    play(playListIndex);
+  };
+
+  // Set the song that plays first
+  useEffect(() => {
+    if (playlist.length > 0) {
+      if (initialSongId === undefined) {
+        setCurrentSong(getSong(0));
+      } else {
+        const firstSong = songs.find(song => song.id === initialSongId);
+        setCurrentSong(firstSong);
+      }
+    }
+  }, []);
 
   return [
     jukeboxStatus,
     setJukeboxStatus,
-    randomMode,
-    setRandomMode,
-    repeatMode,
-    setRepeatMode,
     songs,
     playlistIndex,
-    setPlaylistIndex,
-    sortItem,
-    setSortItem,
-    sortOrderByAsc,
-    setSortOrderByAsc,
-    player,
-    setPlayer,
     playlist,
-    getSong
+    currentSong,
+    play,
+    playBySongId,
+    opts
   ];
 };

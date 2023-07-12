@@ -1,6 +1,7 @@
+import { HeadProps, graphql, useStaticQuery } from 'gatsby';
 import React, { ReactElement } from 'react';
+
 import ogp_image from '../images/icon.png';
-import { graphql, HeadProps, useStaticQuery } from 'gatsby';
 
 export const Head = (props: HeadProps): ReactElement => {
   const { site } = useStaticQuery<Queries.SEOQuery>(query);

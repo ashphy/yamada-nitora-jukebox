@@ -19,7 +19,7 @@ module.exports = {
       version: 'detect'
     }
   },
-  ignorePatterns: ['graphql-types.ts'],
+  ignorePatterns: ['graphql-types.ts', 'gatsby-browser.tsx', '.eslintrc.js'],
   rules: {
     semi: 'off',
     '@typescript-eslint/semi': 'off',

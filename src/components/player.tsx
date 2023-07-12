@@ -1,104 +1,148 @@
-import React, { ReactElement } from 'react';
-import * as style from '../pages/index.module.css';
-import YouTube, { YouTubePlayer } from 'react-youtube';
-import { TwitterShare } from './twitter_share';
-import { RepeatButton } from './player/repeatButton';
-import { IoPlaySkipBack } from '@react-icons/all-files/io5/IoPlaySkipBack';
-import { PlayButton } from './player/playButton';
-import { IoPlaySkipForward } from '@react-icons/all-files/io5/IoPlaySkipForward';
 import { FaRandom } from '@react-icons/all-files/fa/FaRandom';
-import { Music } from '../models/music';
+import { IoPlaySkipBack } from '@react-icons/all-files/io5/IoPlaySkipBack';
+import { IoPlaySkipForward } from '@react-icons/all-files/io5/IoPlaySkipForward';
+import React, { ReactElement } from 'react';
+import YouTube, { YouTubeEvent } from 'react-youtube';
+import { useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
+
 import { JukeBoxStatus } from '../enums/jukeboxStatus';
-import { RepeatMode } from '../enums/repeatMode';
+import { Music } from '../models/music';
+import * as style from '../pages/index.module.css';
+import { randomModeState } from '../recoil/randomModeState';
+import { repeatModeState } from '../recoil/repeatModeState';
+import {
+  isPlaySongChangingState,
+  youTubePlayerState
+} from '../recoil/youTubePlayerState';
+import { PlayButton } from './player/playButton';
+import { RepeatButton } from './player/repeatButton';
+import { TwitterShare } from './twitter_share';
 
 interface Props {
-  currentSong: Music;
+  currentSong: Music | undefined;
   jukeboxStatus: JukeBoxStatus;
   onChangePlayerState: (jukeboxStatus: JukeBoxStatus) => void;
-  repeatMode: RepeatMode;
-  onChangeRepeatMode: (repeatMode: RepeatMode) => void;
-  randomMode: boolean;
   playlistIndex: number;
   onPlay: (playListIndex: number) => void;
   opts: any;
-  setRandomMode: (randomMode: boolean) => void;
-  player: YouTubePlayer;
-  onChangePlayer: (player: YouTubePlayer) => void;
 }
 
 export const Player = ({
   currentSong,
   jukeboxStatus,
   onChangePlayerState,
-  repeatMode,
-  onChangeRepeatMode,
-  randomMode,
   playlistIndex,
   onPlay,
-  opts,
-  setRandomMode,
-  player,
-  onChangePlayer
+  opts
 }: Props): ReactElement => {
+  const setPlayer = useSetRecoilState(youTubePlayerState);
+
+  const [randomMode, setRandomMode] = useRecoilState(randomModeState);
+  const [repeatMode, setRepeatMode] = useRecoilState(repeatModeState);
+  const [isPlaySongChanging, setIsPlaySongChanging] = useRecoilState(
+    isPlaySongChangingState
+  );
+
+  const playMusic = useRecoilCallback(
+    ({ snapshot }) =>
+      () => {
+        void snapshot.getPromise(youTubePlayerState).then(player => {
+          player?.playVideo();
+        });
+      },
+    []
+  );
+
+  const pauseMusic = useRecoilCallback(
+    ({ snapshot }) =>
+      () => {
+        void snapshot.getPromise(youTubePlayerState).then(player => {
+          player?.pauseVideo();
+        });
+      },
+    []
+  );
+
+  const handleOnPlayerEnd = useRecoilCallback(
+    ({ snapshot, set }) =>
+      (event: YouTubeEvent<number>) => {
+        console.log('onEnd');
+        if (isPlaySongChanging) {
+          return;
+        }
+
+        // Go next song
+        if (repeatMode === 'one') {
+          onPlay(playlistIndex);
+        } else {
+          onPlay(playlistIndex + 1);
+        }
+      }
+  );
+
+  const handleOnPlayerReady = useRecoilCallback(
+    ({ snapshot, set }) =>
+      (event: YouTubeEvent<number>) => {
+        set(youTubePlayerState, event.target);
+      }
+  );
+
+  const handleOnStateChange = (event: YouTubeEvent<number>): void => {
+    const player = event.target;
+    setPlayer(player);
+
+    switch (event.data) {
+      case YouTube.PlayerState.UNSTARTED:
+        break;
+      case YouTube.PlayerState.ENDED:
+        if (!isPlaySongChanging) {
+          onChangePlayerState('stop');
+        }
+        break;
+      case YouTube.PlayerState.PLAYING:
+        onChangePlayerState('play');
+        break;
+      case YouTube.PlayerState.PAUSED:
+        if (!isPlaySongChanging) {
+          onChangePlayerState('stop');
+        }
+        break;
+      case YouTube.PlayerState.BUFFERING:
+        break;
+      case YouTube.PlayerState.CUED:
+        if (jukeboxStatus === 'play') {
+          setIsPlaySongChanging(false);
+          player.playVideo();
+        }
+        break;
+    }
+  };
+
   return (
     <div className={style.player}>
       <YouTube
-        videoId={currentSong.videoId ?? ''}
+        videoId={currentSong?.videoId ?? ''}
         className={style.youTubePlayer}
-        onReady={event => {
-          onChangePlayer(event.target);
-
-          if (jukeboxStatus === 'play') {
-            event.target.playVideo();
-          }
-        }}
+        opts={opts}
+        onReady={handleOnPlayerReady}
         onPlay={() => {}}
-        onEnd={() => {
-          // Go next song
-          if (repeatMode === 'one') {
-            onPlay(playlistIndex);
-          } else {
-            onPlay(playlistIndex + 1);
-          }
-        }}
+        onEnd={handleOnPlayerEnd}
         onError={event => {
           console.log('YOUTUBE ERROR', event);
         }}
-        onStateChange={event => {
-          onChangePlayer(event.target);
-
-          switch (event.data) {
-            case YouTube.PlayerState.UNSTARTED:
-              break;
-            case YouTube.PlayerState.ENDED:
-              onChangePlayerState('stop');
-              break;
-            case YouTube.PlayerState.PLAYING:
-              onChangePlayerState('play');
-              break;
-            case YouTube.PlayerState.PAUSED:
-              onChangePlayerState('stop');
-              break;
-            case YouTube.PlayerState.BUFFERING:
-              break;
-            case YouTube.PlayerState.CUED:
-              event.target.playVideo();
-              break;
-          }
-        }}
-        opts={opts}
+        onStateChange={event => void handleOnStateChange(event)}
       />
 
       <div className={style.playerSide}>
         <div className={style.musicInfo}>
-          <p className={style.musicTitle}>{currentSong.title ?? '--'}</p>
-          <p className={style.musicArtist}>{currentSong.artist ?? '--'}</p>
-          <TwitterShare song={currentSong} />
+          <p className={style.musicTitle}>{currentSong?.title ?? '--'}</p>
+          <p className={style.musicArtist}>{currentSong?.artist ?? '--'}</p>
+          {currentSong !== undefined && <TwitterShare song={currentSong} />}
         </div>
         <div className={style.playerControls}>
           <RepeatButton
             repeatMode={repeatMode}
-            onChangeRepeatMode={mode => onChangeRepeatMode(mode)}
+            onChangeRepeatMode={mode => setRepeatMode(mode)}
           />
           <IoPlaySkipBack
             size="3em"
@@ -109,13 +153,14 @@ export const Player = ({
           />
           <PlayButton
             jukeboxStatus={jukeboxStatus}
-            onPlay={() => player?.playVideo()}
-            onPause={() => player?.pauseVideo()}
+            onPlay={playMusic}
+            onPause={pauseMusic}
           />
           <IoPlaySkipForward
             size="3em"
             className={style.controlIcon}
             onClick={() => {
+              setIsPlaySongChanging(true);
               onPlay(playlistIndex + 1);
             }}
           />

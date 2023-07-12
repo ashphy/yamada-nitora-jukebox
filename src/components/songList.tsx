@@ -1,20 +1,21 @@
-import React, { ReactElement } from 'react';
-import * as style from '../pages/index.module.css';
-import { TiArrowSortedUp } from '@react-icons/all-files/ti/TiArrowSortedUp';
-import { TiArrowSortedDown } from '@react-icons/all-files/ti/TiArrowSortedDown';
-import { FaYoutube } from '@react-icons/all-files/fa/FaYoutube';
 import { BsPlayFill } from '@react-icons/all-files/bs/BsPlayFill';
+import { FaYoutube } from '@react-icons/all-files/fa/FaYoutube';
 import { FiExternalLink } from '@react-icons/all-files/fi/FiExternalLink';
-import { SortItem } from '../models/sort_item';
+import { TiArrowSortedDown } from '@react-icons/all-files/ti/TiArrowSortedDown';
+import { TiArrowSortedUp } from '@react-icons/all-files/ti/TiArrowSortedUp';
+import React, { ReactElement } from 'react';
+import { useRecoilState } from 'recoil';
+
 import { Music } from '../models/music';
+import { SortItem } from '../models/sort_item';
+import * as style from '../pages/index.module.css';
+import { sortItemState } from '../recoil/sortItemState';
+import { sortOrderByAscState } from '../recoil/sortOrderByAsc';
 
 interface Props {
   songs: Music[];
   playlist: number[];
   playlistIndex: number;
-  sortItem: SortItem;
-  sortOrderByAsc: boolean;
-  handleOnSort: (item: SortItem) => void;
   playBySongId: (id: number) => void;
 }
 
@@ -22,11 +23,22 @@ export const SongList = ({
   songs,
   playlist,
   playlistIndex,
-  sortItem,
-  sortOrderByAsc,
-  handleOnSort,
   playBySongId
 }: Props): ReactElement => {
+  const [sortItem, setSortItem] = useRecoilState(sortItemState);
+  const [sortOrderByAsc, setSortOrderByAsc] =
+    useRecoilState(sortOrderByAscState);
+
+  const handleOnSortPlayList = (newSortItem: SortItem): void => {
+    setSortItem(newSortItem);
+
+    if (sortItem === newSortItem) {
+      setSortOrderByAsc(!sortOrderByAsc);
+    } else {
+      setSortOrderByAsc(true);
+    }
+  };
+
   return (
     <div className={style.songList}>
       <table>
@@ -35,7 +47,7 @@ export const SongList = ({
             <th className={style.songCursor}></th>
             <th
               className={style.songTitle}
-              onClick={() => handleOnSort('title')}
+              onClick={() => handleOnSortPlayList('title')}
             >
               Title
               <span className={style.sortIcon}>
@@ -49,7 +61,7 @@ export const SongList = ({
             </th>
             <th
               className={style.songArtist}
-              onClick={() => handleOnSort('artist')}
+              onClick={() => handleOnSortPlayList('artist')}
             >
               Artist
               <span className={style.sortIcon}>
@@ -63,7 +75,7 @@ export const SongList = ({
             </th>
             <th
               className={style.songSource}
-              onClick={() => handleOnSort('source')}
+              onClick={() => handleOnSortPlayList('source')}
             >
               Source
               <span className={style.sortIcon}>

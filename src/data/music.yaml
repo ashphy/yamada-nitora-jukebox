@@ -3200,14 +3200,16 @@
       artist: 薄塩指数
 - video: bkP0kLZlESc
   start: 00:04:15
-  end: 00:07:48
+#  end: 00:07:48
+  end: 00:04:20
   meta:
     ja:
       title: おジャ魔女カーニバル!!
       artist: MAHO堂
 - video: bkP0kLZlESc
   start: 00:08:56
-  end: 00:13:08
+#  end: 00:13:08
+  end: 00:09:01
   meta:
     ja:
       title: 恋愛サーキュレーション

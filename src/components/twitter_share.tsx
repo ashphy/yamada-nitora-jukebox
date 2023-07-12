@@ -1,6 +1,7 @@
-import * as style from '../components/twitter_share.module.css';
 import { FaTwitter } from '@react-icons/all-files/fa/FaTwitter';
 import React from 'react';
+
+import * as style from '../components/twitter_share.module.css';
 import { Music } from '../models/music';
 
 interface Props {

@@ -2,6 +2,9 @@ import type { GatsbyConfig } from 'gatsby';
 import path from 'path';
 
 const config: GatsbyConfig = {
+  flags: {
+    DEV_SSR: true
+  },
   siteMetadata: {
     title: '山田ニトラ ジュークボックス',
     description: '山田ニトラさんが歌った楽曲をまとめて再生できるサイトです。',

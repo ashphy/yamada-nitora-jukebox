@@ -1,5 +1,5 @@
 exports.createSchemaCustomization = ({ actions }) => {
-  const { createTypes } = actions
+  const { createTypes } = actions;
   const typeDefs = `
     type Music implements Node {
       video: Video @link(by: "videoId")
@@ -9,6 +9,6 @@ exports.createSchemaCustomization = ({ actions }) => {
       musics: [Music] @link(by: "video.videoId", from: "videoId")
       date: Date
     }
-  `
-  createTypes(typeDefs)
-}
+  `;
+  createTypes(typeDefs);
+};
