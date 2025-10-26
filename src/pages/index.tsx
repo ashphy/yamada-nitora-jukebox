@@ -1,6 +1,5 @@
 import { PageProps, graphql } from 'gatsby';
 import React from 'react';
-import GitHubButton from 'react-github-btn';
 import { RecoilSync } from 'recoil-sync';
 
 import { SongsQuery } from '../../graphql-types';
