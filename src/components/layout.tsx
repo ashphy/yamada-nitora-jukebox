@@ -1,13 +1,15 @@
 import React, { ReactElement } from 'react';
 
+import * as style from './layout.module.css';
+
 type LayoutProps = Required<{
   readonly children: ReactElement;
 }>;
 
 export const Layout = ({ children }: LayoutProps): ReactElement => {
   return (
-    <>
-      {children}
+    <div className={style.layout}>
+      <div className={style.mainArea}>{children}</div>
       <footer>
         <p>
           このサイトは非公式ファンサイトです。
@@ -27,6 +29,6 @@ export const Layout = ({ children }: LayoutProps): ReactElement => {
           </a>
         </p>
       </footer>
-    </>
+    </div>
   );
 };
